@@ -1,4 +1,4 @@
-# [ KeyControlFront - Projeto utilizando o Horizon UI ⚡️]
+# [Projeto utilizando o Horizon UI ⚡️]
 
 ![version](https://img.shields.io/badge/version-3.0.0-brightgreen.svg)
 ![license](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -58,5 +58,3 @@ npm start
 ```bash
 npm run start:api
 ```
-
-
