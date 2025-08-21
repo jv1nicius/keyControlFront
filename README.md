@@ -1,4 +1,4 @@
-# [keyControlFront - Projeto utilizando o Horizon UI ⚡️]
+# [ KeyControlFront - Projeto utilizando o Horizon UI ⚡️]
 
 ![version](https://img.shields.io/badge/version-3.0.0-brightgreen.svg)
 ![license](https://img.shields.io/badge/license-MIT-blue.svg)
