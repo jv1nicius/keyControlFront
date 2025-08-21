@@ -23,9 +23,11 @@ Este é um sistema web para gerenciar o controle de chaves no IFPB campus Guarab
 Todos os componentes do horizon se encontram aqui:⚡️
 <a href="https://horizon-ui.com/components/?ref=readme-horizon" target="_blank">Veja todos os componentes</a>
 
+
 ### Link do Horizon UI chakra
 
 Para acessar todos os detalhes e o conteudo principal do Horizon, clique <a href="https://github.com/horizon-ui/horizon-ui-chakra" target="_blank">Horizon UI chakra</a>
+
 
 ### Início Rápido
 
@@ -37,17 +39,23 @@ Clone o repositório com o seguinte comando:
 git clone https://github.com/jv1nicius/keyControlFront.git
 ```
 
+
 Execute no terminal este comando:
 
 ```bash
 npm install react@18 react-dom@18
 ```
+
+
 Inicie o servidor local:
 
 ```bash
 npm start
 ```
+
+
 (Opcional) Inicie o servidor do Json Server:
 ```bash
 npm run start:api
 ```
+
