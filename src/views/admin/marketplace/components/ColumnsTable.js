@@ -40,20 +40,44 @@ export default function ColumnTable(props) {
     const [sorting, setSorting] = React.useState([]);
     const textColor = useColorModeValue('secondaryGray.900', 'white');
     const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
+    const [selectedProfessor, setSelectedProfessor] = useState(null);
+
+    const onEditClick = (rowData) => {
+        setSelectedProfessor(rowData);
+        onOpen();
+    };
 
     useEffect(() => {
         const fetchProfessores = async () => {
             try {
-                const response = await fetch("http://localhost:3001/professores");
+                const response = await fetch("http://localhost:5000/responsaveis");
                 const data = await response.json();
+
                 setProfessores(data);
             } catch (error) {
-                console.error("Erro ao buscar as salas:", error);
+                console.error("Erro ao buscar os professores:", error);
             }
         };
+        fetchProfessores()
+    },[isOpen])
 
-        fetchProfessores();
-    }, []);
+    const handleDelete = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:5000/responsaveis/${id}`, {
+                method: 'DELETE',
+            });
+            
+            if (response.ok) {
+                setProfessores((prevProfessores) => prevProfessores.filter((professor) => professor.id !== id));
+                alert('Professor excluído com sucesso');
+            } else {
+                alert('Erro ao excluir o professor');
+            }
+        } catch (error) {
+            console.error("Erro ao excluir o professor:", error);
+        }
+    };
+
 
     const columns = React.useMemo(() => {
         return props.columnsData.map((col) =>
@@ -103,7 +127,7 @@ export default function ColumnTable(props) {
             overflowX={{ sm: 'scroll', lg: 'hidden' }}
         >
             <Flex px="25px" mb="8px" justifyContent="space-between" align="center" marginX={12}>
-                <ProfessorModal isOpen={isOpen} onClose={onClose} finalRef={finalRef} />
+                <ProfessorModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} finalRef={finalRef} obj={selectedProfessor}/>
                 <Text
                     color={textColor}
                     fontSize="16px"
@@ -154,6 +178,7 @@ export default function ColumnTable(props) {
                             .getRowModel()
                             .rows.slice(0, 15)
                             .map((row) => {
+                                console.log(row.original);
                                 return (
                                     <Tr key={row.id}>
                                         {row.getVisibleCells().map((cell) => {
@@ -172,8 +197,15 @@ export default function ColumnTable(props) {
                                             );
                                         })}
                                         <ButtonGroup variant="ghost" spacing="3">
-                                            <Button colorScheme='teal'>{<EditIcon />}</Button>
-                                            <Button colorScheme="red">{<DeleteIcon />}</Button>
+                                        <Button
+                                            colorScheme='teal'
+                                            onClick={() => onEditClick(row.original)}
+                                        >
+                                            <EditIcon />
+                                        </Button>
+                                            <Button colorScheme="red" onClick={() => handleDelete(row.original.id)}>
+                                                {<DeleteIcon />}
+                                            </Button>
                                         </ButtonGroup>
                                     </Tr>
                                 );

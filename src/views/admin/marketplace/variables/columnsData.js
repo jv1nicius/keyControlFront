@@ -96,19 +96,19 @@ export const columnsDataSalas = [
 export const columnsDataProfessores = [
     {
         Header: "NOME",
-        accessor: "nome",
+        accessor: "responsavel_nome",
     },
     {
-        Header: "SIAPE",
-        accessor: "siape",
+        Header: "SIAP",
+        accessor: "responsavel_siap",
     },
     {
         Header: "CPF",
-        accessor: "cpf",
+        accessor: "responsavel_cpf",
     },
     {
         Header: "DATA DE NASCIMENTO",
-        accessor: "dataNascimento",
+        accessor: "responsavel_data_nascimento",
     },
 ];
 
@@ -134,4 +134,3 @@ export const columnsDataReservas = [
         accessor: "hFim",
     },
 ];
-
