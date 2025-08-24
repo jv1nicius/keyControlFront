@@ -86,7 +86,7 @@ export default function UserReports() {
 
     const fetchSalas = async () => {
         try {
-            const response = await fetch("http://localhost:3001/salas");
+            const response = await fetch("http://localhost:5000/salas");
             const data = await response.json();
             setSalas(data);
         } catch (error) {
@@ -129,8 +129,8 @@ export default function UserReports() {
                 mb='20px'>
                 {salas.map((sala) => (
                     <NFT
-                        key={sala.id}
-                        name={sala.nome}
+                        key={sala.sala_id}
+                        name={sala.sala_nome}
                         image={classroomIcon}
                         onOpen={() =>{
                             setReservaSelecionada(sala);

@@ -123,14 +123,14 @@ export const columnsDataReservas = [
     },
     {
         Header: "RESPONSAVEL",
-        accessor: "responsavel",
+        accessor: "responsavel_id",
     },
     {
         Header: "H.INICIO",
-        accessor: "hInicio",
+        accessor: "hora_inicio",
     },
     {
         Header: "H.FIM",
-        accessor: "hFim",
+        accessor: "hora_fim",
     },
 ];

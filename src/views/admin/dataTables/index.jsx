@@ -47,8 +47,6 @@ export default function Settings() {
         diaSemana: nomeDoDiaCapitalizado,
         data: dataFormatada,
     };
-    
-    // Chakra Color Mode
     return (
         <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
             <ColumnsTable columnsData={columnsDataReservas} headerInfo={headerInfo} />

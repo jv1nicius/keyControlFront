@@ -28,29 +28,121 @@ import {
 import Card from 'components/card/Card';
 import Menu from 'components/menu/MainMenu';
 
+import ReservaModal from 'components/modal/ReservaModal';
+import { useDisclosure } from '@chakra-ui/react';
+
 const columnHelper = createColumnHelper();
 
 // const columns = columnsDataCheck;
 export default function ColumnTable(props) {
     const { columnsData, headerInfo = {} } = props;
-    const [reservas, setReservas] = useState([]);
+    const [reservasExibir, setReservasExibir] = useState([]);
+    const [reservasBruta, setReservasBruta] = useState([]);
+
     const [sorting, setSorting] = React.useState([]);
     const textColor = useColorModeValue('secondaryGray.900', 'white');
     const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const finalRef = React.useRef();
+    const [selectedReserva, setSelectedReserva] = useState('')
 
+    const onEditClick = async (data) => {
+        const reservaData = reservasBruta.filter(r => r.reserva_id === data.id)
+        const salaData = await fetchSala(data.sala)
+        const responsavelData = await fetchResponsavel(reservaData[0].responsavel_id)
+        const reservaModalData = {
+            "is_edit": true,
+            "reserva_id": reservaData[0].reserva_id,
+            "sala_nome": salaData.sala_nome,
+            "sala_id": salaData.sala_id,
+            "responsavel_id": responsavelData.responsavel_id,
+            "data_hora_inicio": reservaData[0].data_hora_inicio,
+            "data_hora_fim": reservaData[0].data_hora_fim
+        }
+        setSelectedReserva(reservaModalData);
+        console.log(reservaModalData);
+        onOpen();
+    };
+
+    const getHoraMinutoUTC = (dateStr) => {
+        const match = dateStr.match(/(\d{2}:\d{2}):\d{2}/);
+        return match ? match[1] : '';
+    }
+
+    
     useEffect(() => {
         const fetchReservas = async () => {
             try {
-                const response = await fetch("http://localhost:3001/reservas");
+                const response = await fetch("http://localhost:5000/reservas");
                 const data = await response.json();
-                setReservas(data);
+                setReservasBruta(data)
+    
+                const hoje = new Date();
+                const hojeUTC = Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+    
+                const reservasDoDia = data.filter((reserva) => {
+                    const inicio = new Date(reserva.data_hora_inicio);
+                    const inicioUTC = Date.UTC(inicio.getFullYear(), inicio.getMonth(), inicio.getDate());
+                    return inicioUTC === hojeUTC;
+                });
+    
+                const reservasFormatadas = reservasDoDia.map((reserva) => ({
+                    id: reserva.reserva_id,
+                    sala: reserva.sala_id,
+                    responsavel_id: reserva.responsavel_id,
+                    hora_inicio: getHoraMinutoUTC(reserva.data_hora_inicio),
+                    hora_fim: getHoraMinutoUTC(reserva.data_hora_fim),
+                }));
+                setReservasExibir(reservasFormatadas);
+    
             } catch (error) {
-                console.error("Erro ao buscar as salas:", error);
+                console.error("Erro ao buscar as reservas:", error);
             }
         };
-
+    
         fetchReservas();
     }, []);
+
+
+    const fetchSala = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:5000/salas/${id}` );
+            const data = await response.json();
+            return data;
+
+        } catch (error) {
+            console.error("Erro ao buscar a sala:", error);
+        }
+    };
+
+    const fetchResponsavel = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:5000/responsaveis/${id}` );
+            const data = await response.json();
+            return data;
+
+        } catch (error) {
+            console.error("Erro ao buscar a sala:", error);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:5000/reservas/${id}`, {
+                method: 'DELETE',
+            });
+            
+            if (response.ok) {
+                alert('Reserva excluída com sucesso');
+            } else {
+                alert('Erro ao excluir a Reserva');
+            }
+        } catch (error) {
+            console.error("Erro ao excluir a Reserva:", error);
+        }
+    };
+    
+    
 
     const columns = React.useMemo(() => {
         return props.columnsData.map((col) =>
@@ -78,8 +170,8 @@ export default function ColumnTable(props) {
     const [data, setData] = React.useState([]);
 
     React.useEffect(() => {
-        setData(reservas);
-    }, [reservas]);
+        setData(reservasExibir);
+    }, [reservasExibir]);
 
     const table = useReactTable({
         data,
@@ -100,6 +192,7 @@ export default function ColumnTable(props) {
             overflowX={{ sm: 'scroll', lg: 'hidden' }}
         >
             <Flex px="25px" mb="8px" justifyContent="space-between" align="center" marginX={12}>
+                <ReservaModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} finalRef={finalRef} reserva={selectedReserva}/>
                 <Text
                     color={textColor}
                     fontSize="22px"
@@ -177,8 +270,18 @@ export default function ColumnTable(props) {
                                             );
                                         })}
                                         <ButtonGroup variant="ghost" spacing="3">
-                                            <Button colorScheme='teal'>{<EditIcon />}</Button>
-                                            <Button colorScheme="red">{<DeleteIcon />}</Button>
+                                            <Button 
+                                                colorScheme='teal'
+                                                onClick={() => onEditClick(row.original)}
+                                            >
+                                                {<EditIcon />}
+                                            </Button>
+                                            <Button 
+                                                colorScheme="red"
+                                                onClick={() => {handleDelete(row.original.id)}}
+                                            >
+                                                {<DeleteIcon />}
+                                            </Button>
                                         </ButtonGroup>
                                     </Tr>
                                 );
