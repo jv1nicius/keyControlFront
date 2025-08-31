@@ -21,6 +21,8 @@ import React, { useState, useEffect } from "react";
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
+import { ToastContainer, toast } from 'react-toastify';
+
 function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
     const initialRef = React.useRef();
     const [cleanModal, setCleanModal] = useState(false)
@@ -64,9 +66,11 @@ function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
             if (response.ok) {
                 const responseData = await response.json();
                 console.log('Resposta do servidor:', responseData);
+                toast.success("Reserva Realizada!", {theme: "colored"})
                 setCleanModal(true);
             } else {
                 console.error('Erro na requisição:', response.statusText);
+                toast.error("Erro ao Realizar Reserva!", {theme: "colored"})
                 setCleanModal(false);
             }
         } catch (err) {
@@ -84,10 +88,10 @@ function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
             });
 
             if (response.ok) {
-                const responseData = await response.json();
-                console.log('Resposta do servidor:', responseData);
+                toast.success("Reserva Atualizada!", {theme: "colored"})
                 setCleanModal(true);
             } else {
+                toast.error("Erro ao Atualizar Reserva", {theme: "colored"})
                 console.error('Erro na requisição:', response.statusText);
                 setCleanModal(false);
             }
@@ -104,8 +108,6 @@ function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
             "data_hora_inicio": combineDateAndTime(values.data, values.hora_inicio),
             "data_hora_fim": combineDateAndTime(values.data, values.hora_fim),
         }
-        // console.log(reserva.reserva_id);
-        // console.log(JSON.stringify(novaReserva));
 
         if (isEdit) {
             await updateData(novaReserva)
@@ -120,6 +122,8 @@ function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
     }
 
     return (
+        <>
+        <ToastContainer />
         <Modal
             initialFocusRef={initialRef}
             finalFocusRef={finalRef}
@@ -204,6 +208,7 @@ function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
                 </ModalBody>
             </ModalContent>
         </Modal>
+        </>
     );
 }
 

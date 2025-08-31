@@ -28,6 +28,7 @@ import ProfessorModal from "components/modal/ProfessorModal";
 // Custom components
 import Card from 'components/card/Card';
 import Menu from 'components/menu/MainMenu';
+import { ToastContainer, toast } from 'react-toastify';
 
 const columnHelper = createColumnHelper();
 
@@ -52,7 +53,6 @@ export default function ColumnTable(props) {
             try {
                 const response = await fetch("http://localhost:5000/responsaveis");
                 const data = await response.json();
-
                 setProfessores(data);
             } catch (error) {
                 console.error("Erro ao buscar os professores:", error);
@@ -69,9 +69,9 @@ export default function ColumnTable(props) {
             
             if (response.ok) {
                 setProfessores((prevProfessores) => prevProfessores.filter((professor) => professor.id !== id));
-                alert('Professor excluído com sucesso');
+                toast.success("Responsável Excluído!", {theme: "colored"})
             } else {
-                alert('Erro ao excluir o professor');
+                toast.error("Erro ao Excluir Responsavel", {theme: "colored"})
             }
         } catch (error) {
             console.error("Erro ao excluir o professor:", error);
@@ -120,99 +120,102 @@ export default function ColumnTable(props) {
         debugTable: true,
     });
     return (
-        <Card
-            flexDirection="column"
-            w="100%"
-            px="0px"
-            overflowX={{ sm: 'scroll', lg: 'hidden' }}
-        >
-            <Flex px="25px" mb="8px" justifyContent="space-between" align="center" marginX={12}>
-                <ProfessorModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} finalRef={finalRef} obj={selectedProfessor}/>
-                <Text
-                    color={textColor}
-                    fontSize="16px"
-                    fontWeight="500"
-                    lineHeight="100%"
-                >
-                    {headerInfo?.data || ""}
-                </Text>
-            </Flex>
-            <Box>
-                <Table variant="simple" color="gray.500" mb="24px" mt="12px">
-                    <Thead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <Tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <Th
-                                            key={header.id}
-                                            colSpan={header.colSpan}
-                                            pe="10px"
-                                            borderColor={borderColor}
-                                            cursor="pointer"
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            <Flex
-                                                justifyContent="space-between"
-                                                align="center"
-                                                fontSize={{ sm: '10px', lg: '12px' }}
-                                                color="gray.400"
+        <>
+            <ToastContainer />
+            <Card
+                flexDirection="column"
+                w="100%"
+                px="0px"
+                overflowX={{ sm: 'scroll', lg: 'hidden' }}
+            >
+                <Flex px="25px" mb="8px" justifyContent="space-between" align="center" marginX={12}>
+                    <ProfessorModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} finalRef={finalRef} obj={selectedProfessor}/>
+                    <Text
+                        color={textColor}
+                        fontSize="16px"
+                        fontWeight="500"
+                        lineHeight="100%"
+                    >
+                        {headerInfo?.data || ""}
+                    </Text>
+                </Flex>
+                <Box>
+                    <Table variant="simple" color="gray.500" mb="24px" mt="12px">
+                        <Thead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <Tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                        return (
+                                            <Th
+                                                key={header.id}
+                                                colSpan={header.colSpan}
+                                                pe="10px"
+                                                borderColor={borderColor}
+                                                cursor="pointer"
+                                                onClick={header.column.getToggleSortingHandler()}
                                             >
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext(),
-                                                )}
-                                                {{
-                                                    asc: '',
-                                                    desc: '',
-                                                }[header.column.getIsSorted()] ?? null}
-                                            </Flex>
-                                        </Th>
-                                    );
-                                })}
-                            </Tr>
-                        ))}
-                    </Thead>
-                    <Tbody>
-                        {table
-                            .getRowModel()
-                            .rows.slice(0, 15)
-                            .map((row) => {
-                                console.log(row.original);
-                                return (
-                                    <Tr key={row.id}>
-                                        {row.getVisibleCells().map((cell) => {
-                                            return (
-                                                <Td
-                                                    key={cell.id}
-                                                    fontSize={{ sm: '14px' }}
-                                                    minW={{ sm: '150px', md: '200px', lg: 'auto' }}
-                                                    borderColor="transparent"
+                                                <Flex
+                                                    justifyContent="space-between"
+                                                    align="center"
+                                                    fontSize={{ sm: '10px', lg: '12px' }}
+                                                    color="gray.400"
                                                 >
                                                     {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext(),
+                                                        header.column.columnDef.header,
+                                                        header.getContext(),
                                                     )}
-                                                </Td>
-                                            );
-                                        })}
-                                        <ButtonGroup variant="ghost" spacing="3">
-                                            <Button
-                                                colorScheme='teal'
-                                                onClick={() => onEditClick(row.original)}
-                                            >
-                                                <EditIcon />
-                                            </Button>
-                                            <Button colorScheme="red" onClick={() => handleDelete(row.original.responsavel_id)}>
-                                                <DeleteIcon />
-                                            </Button>
-                                        </ButtonGroup>
-                                    </Tr>
-                                );
-                            })}
-                    </Tbody>
-                </Table>
-            </Box>
-        </Card>
+                                                    {{
+                                                        asc: '',
+                                                        desc: '',
+                                                    }[header.column.getIsSorted()] ?? null}
+                                                </Flex>
+                                            </Th>
+                                        );
+                                    })}
+                                </Tr>
+                            ))}
+                        </Thead>
+                        <Tbody>
+                            {table
+                                .getRowModel()
+                                .rows.slice(0, 15)
+                                .map((row) => {
+                                    console.log(row.original);
+                                    return (
+                                        <Tr key={row.id}>
+                                            {row.getVisibleCells().map((cell) => {
+                                                return (
+                                                    <Td
+                                                        key={cell.id}
+                                                        fontSize={{ sm: '14px' }}
+                                                        minW={{ sm: '150px', md: '200px', lg: 'auto' }}
+                                                        borderColor="transparent"
+                                                    >
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext(),
+                                                        )}
+                                                    </Td>
+                                                );
+                                            })}
+                                            <ButtonGroup variant="ghost" spacing="3">
+                                                <Button
+                                                    colorScheme='teal'
+                                                    onClick={() => onEditClick(row.original)}
+                                                >
+                                                    <EditIcon />
+                                                </Button>
+                                                <Button colorScheme="red" onClick={() => handleDelete(row.original.responsavel_id)}>
+                                                    <DeleteIcon />
+                                                </Button>
+                                            </ButtonGroup>
+                                        </Tr>
+                                    );
+                                })}
+                        </Tbody>
+                    </Table>
+                </Box>
+            </Card>
+        </>
     );
 }

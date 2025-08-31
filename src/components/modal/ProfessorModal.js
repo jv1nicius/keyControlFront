@@ -15,10 +15,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { AddIcon } from "@chakra-ui/icons";
+import { ToastContainer, toast } from 'react-toastify';
 
 function ProfessorModal({ obj, isOpen, onClose, onOpen, finalRef }) {
     const initialRef = useRef();
     const [isEdit, setIsEdit] = useState(false);
+    
 
     useEffect(() => {
         if (obj) {
@@ -43,10 +45,14 @@ function ProfessorModal({ obj, isOpen, onClose, onOpen, finalRef }) {
                 body: JSON.stringify(dataToSend),
             });
 
-            if (!response.ok) throw new Error("Erro ao salvar");
+            if (!response.ok) {
+                toast.error("Erro ao Cadastrar Responsável!", {theme: "colored"})
+                throw new Error("Erro ao salvar")
+            };
 
             const responseData = await response.json();
             console.log('Criado:', responseData);
+            toast.success("Cadastro Realizado!", {theme: "colored"})
         } catch (err) {
             console.error('Erro:', err);
         }
@@ -60,10 +66,14 @@ function ProfessorModal({ obj, isOpen, onClose, onOpen, finalRef }) {
                 body: JSON.stringify(dataToSend),
             });
 
-            if (!response.ok) throw new Error("Erro ao atualizar");
+            if (!response.ok) {
+                toast.error("Erro ao Atualizar Responsável!", {theme: "colored"})
+                throw new Error("Erro ao atualizar");
+            }
 
             const responseData = await response.json();
             console.log('Atualizado:', responseData);
+            toast.success("Dados do Responsável Atualizados!", {theme: "colored"})
         } catch (err) {
             console.error('Erro:', err);
         }
@@ -94,6 +104,8 @@ function ProfessorModal({ obj, isOpen, onClose, onOpen, finalRef }) {
                     Adicionar
                 </Button>
             </div>
+
+            <ToastContainer />
 
             <Modal
                 initialFocusRef={initialRef}
