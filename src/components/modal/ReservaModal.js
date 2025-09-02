@@ -51,10 +51,12 @@ function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
 
     const combineDateAndTime = (date, time) => {
         if (!date || !time) return '';
-
+    
         const localDateTime = new Date(`${date}T${time}:00`);
-        return localDateTime.toISOString();
+    
+        return localDateTime.toLocaleString('sv-SE');
     };
+    
 
 
 
@@ -126,7 +128,7 @@ function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
 
     return (
         <>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
         <Modal
             initialFocusRef={initialRef}
             finalFocusRef={finalRef}
