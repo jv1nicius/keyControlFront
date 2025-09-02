@@ -142,7 +142,7 @@ export default function UserReports() {
                     flexDirection='column'
                     gridArea={{ xl: "1 / 1 / 2 / 3", "2xl": "1 / 1 / 2 / 2" }}>
                     <SimpleGrid
-                        columns={{ base: 1, md: 2, lg: 3, "2xl": 3 }}
+                        columns={{ base: 1, md: 2, lg: 2, "2xl": 2 }}
                         gap='20px'
                         mb='20px'>
                         {salas.map((sala) =>
