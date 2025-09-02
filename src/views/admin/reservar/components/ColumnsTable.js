@@ -50,7 +50,7 @@ export default function ColumnTable(props) {
 
     const onEditClick = async (data) => {
         const reservaData = reservasBruta.filter(r => r.reserva_id === data.id)
-        const salaData = await fetchSala(data.sala)
+        const salaData = await fetchSala(data.id)
         const responsavelData = await fetchResponsavel(reservaData[0].responsavel_id)
         const reservaModalData = {
             "is_edit": true,
@@ -98,6 +98,7 @@ export default function ColumnTable(props) {
                 const reservasFormatadas = await Promise.all(reservasNaoFinalizadas.map(async (reserva) => {
                     const salaData = await fetchSala(reserva.sala_id);
                     const responsavelData = await fetchResponsavel(reserva.responsavel_id);
+                    console.log(salaData);
 
                     return {
                         id: reserva.reserva_id,
