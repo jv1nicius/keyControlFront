@@ -51,8 +51,11 @@ function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
 
     const combineDateAndTime = (date, time) => {
         if (!date || !time) return '';
-        return `${date}T${time}:00`;
+
+        const localDateTime = new Date(`${date}T${time}:00`);
+        return localDateTime.toISOString();
     };
+
 
 
     const postData = async (dataToSend) => {

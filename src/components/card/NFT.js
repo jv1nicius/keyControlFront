@@ -18,10 +18,11 @@ import React, { useState } from "react";
 import { IoHeart, IoHeartOutline } from "react-icons/io5";
 
 export default function NFT(props) {
-    const { image = "", name, onOpen } = props;
+    const { image = "", name, onOpen, estado = "Livre" } = props;
     const [like, setLike] = useState(false);
     const textColor = useColorModeValue("navy.700", "white");
     const textColorBid = useColorModeValue("brand.500", "white");
+
     return (
         <Card p='20px'>
             <Flex direction={{ base: "column" }} justify='center'>
@@ -33,6 +34,7 @@ export default function NFT(props) {
                         borderRadius='20px'
                     />
                 </Box>
+
                 <Flex justify="space-between" align="center">
                     <Text
                         color={textColor}
@@ -53,6 +55,7 @@ export default function NFT(props) {
                         colorScheme="green"
                         variant="outline"
                         onClick={onOpen}
+                        isDisabled={estado !== "Livre"}
                     >
                         Reservar
                     </Button>
