@@ -130,7 +130,7 @@ export const columnsDataReservas = [
         accessor: "hora_inicio",
     },
     {
-        Header: "H.FIM",
+        Header: "H.FINALIZAÇÃO",
         accessor: "hora_fim",
     }
 ];

@@ -25,9 +25,11 @@ import {
     Avatar,
     Box,
     Flex,
+    Card,
     FormLabel,
     Icon,
     Select,
+    Grid,
     SimpleGrid,
     useColorModeValue,
     Text, Input,
@@ -41,6 +43,7 @@ import {
     ModalCloseButton,
 } from "@chakra-ui/react";
 
+import ColumnsTable from "views/admin/reservar/components/ColumnsTable";
 // Assets
 import Usa from "assets/img/dashboards/usa.png";
 // Custom components
@@ -57,14 +60,24 @@ import {
     MdFileCopy,
 } from "react-icons/md";
 import NFT from "components/card/NFT"
-import classroomIcon from "assets/img/nfts/classroomIcon.png";
+import classroomIcon from "assets/img/nfts/classroomIcon-removebg-preview.png";
+import {
+    columnsDataDevelopment,
+    columnsDataCheck,
+    columnsDataReservas,
+    columnsDataComplex,
+} from "views/admin/historico/variables/columnsData";
 
 export default function UserReports() {
     const [salas, setSalas] = useState([]);
     const [responsaveis, setResponsaveis] = useState([]);
+    const [reservas, setReservas] = useState([]);
+    const [finalizacoes, setFinalizacoes] = useState([]);
     const [reservaSelecionada, setReservaSelecionada] = useState(null);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const finalRef = React.useRef();
+    const [estadosDasSalas, setEstadosDasSalas] = useState({});
+
 
     // Chakra Color Mode
     const brandColor = useColorModeValue("brand.500", "white");
@@ -91,41 +104,67 @@ export default function UserReports() {
         }
     };
 
+    const fetchReservas = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/reservas");
+            const data = await response.json();
+            setReservas(data);
+        } catch (error) {
+            console.error("Erro ao buscar as reservas:", error);
+        }
+    };
+
     useEffect(() => {
         fetchSalas();
         fetchResponsaveis();
+        fetchReservas();
+        fetchFinalizacoes();
     }, []);
+
+    const fetchFinalizacoes = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/finalizacoes");
+            const data = await response.json();
+            setFinalizacoes(data);
+        } catch (error) {
+            console.error("Erro ao buscar as finalizações:", error);
+        }
+    };
 
     return (
         <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
-            <Text color={textColor}
-                fontSize={{
-                    base: "xl",
-                    md: "lg",
-                    lg: "lg",
-                    xl: "lg",
-                    "2xl": "md",
-                    "3xl": "lg",
-                }}
-                mb='5px'
-                fontWeight='bold'
-                me='14px'>Salas</Text>
-            <SimpleGrid
-                columns={{ base: 1, md: 2, lg: 4, "2xl": 3 }}
-                gap='20px'
-                mb='20px'>
-                {salas.map((sala) => (
-                    <NFT
-                        key={sala.sala_id}
-                        name={sala.sala_nome}
-                        image={classroomIcon}
-                        onOpen={() =>{
-                            setReservaSelecionada(sala);
-                            onOpen();
-                        }}
-                    />
-                ))}
-            </SimpleGrid>
+            <Grid
+                mb='20px'
+                gridTemplateColumns={{ xl: "repeat(3, 1fr)", "2xl": "1fr 0.46fr" }}
+                gap={{ base: "20px", xl: "20px" }}
+                display={{ base: "block", xl: "grid" }}>
+                <Flex
+                    flexDirection='column'
+                    gridArea={{ xl: "1 / 1 / 2 / 3", "2xl": "1 / 1 / 2 / 2" }}>
+                    <SimpleGrid
+                        columns={{ base: 1, md: 2, lg: 3, "2xl": 3 }}
+                        gap='20px'
+                        mb='20px'>
+                        {salas.map((sala) =>
+                            <NFT
+                                key={sala.sala_id}
+                                name={sala.sala_nome}
+                                image={classroomIcon}
+                                onOpen={() => {
+                                    setReservaSelecionada(sala);
+                                    onOpen();
+                                }}
+                            />
+                        )
+                        }
+                    </SimpleGrid>
+                </Flex>
+                <Flex
+                    flexDirection='column'
+                    gridArea={{ xl: "1 / 3 / 2 / 4", "2xl": "1 / 2 / 2 / 3" }}>
+                    <ColumnsTable columnsData={columnsDataReservas} />
+                </Flex>
+            </Grid>
             <ReservaModal isOpen={isOpen} onClose={onClose} finalRef={finalRef} reserva={reservaSelecionada} responsaveis={responsaveis} />
         </Box>
     );

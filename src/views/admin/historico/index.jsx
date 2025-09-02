@@ -21,7 +21,7 @@
 */
 
 // Chakra imports
-import { Box, SimpleGrid } from "@chakra-ui/react";
+import { Box, SimpleGrid, Grid, Flex, Text, Card } from "@chakra-ui/react";
 import ColumnsTable from "views/admin/historico/components/ColumnsTable";
 import {
     columnsDataDevelopment,

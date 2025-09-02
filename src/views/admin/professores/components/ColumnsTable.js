@@ -119,6 +119,7 @@ export default function ColumnTable(props) {
         getSortedRowModel: getSortedRowModel(),
         debugTable: true,
     });
+    
     return (
         <>
             <ToastContainer />
