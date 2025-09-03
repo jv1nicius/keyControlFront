@@ -144,8 +144,8 @@ function HistoricoModal({ isOpen, onClose, historico, responsaveis, salas, final
                     <ModalBody pb={6}>
                         <Formik
                             initialValues={{
-                                sala_id: historico.sala,
-                                responsavel_id: historico?.responsavel_id || '',
+                                sala_id: historico.sala_id,
+                                responsavel_id: historico?.responsavel_nome || '',
                                 data: historico?.data_hora_inicio
                                     ? formatDateForInput(historico.data_hora_inicio).slice(0, 10)
                                     : '',

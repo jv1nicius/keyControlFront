@@ -66,7 +66,7 @@ function ProfessorModal({ obj, isOpen, onClose, onOpen, finalRef }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dataToSend),
             });
-
+            
             if (!response.ok) {
                 toast.error("Erro ao Atualizar Responsável!", {theme: "colored"})
                 throw new Error("Erro ao atualizar");
@@ -81,16 +81,19 @@ function ProfessorModal({ obj, isOpen, onClose, onOpen, finalRef }) {
     };
 
     const handleSubmit = async (values, actions) => {
-        const responsavel = {
-            responsavel_nome: values.nome,
-            responsavel_siap: values.siape,
-            responsavel_cpf: values.cpf,
-            responsavel_data_nascimento: values.dataNas,
-        };
-
         if (isEdit) {
+            const responsavel = {
+                responsavel_nome: values.nome,
+                responsavel_data_nascimento: values.dataNas,
+            };
             await updateData(responsavel);
         } else {
+            const responsavel = {
+                responsavel_nome: values.nome,
+                responsavel_siap: values.siape,
+                responsavel_cpf: values.cpf,
+                responsavel_data_nascimento: values.dataNas,
+            };
             await postData(responsavel);
         }
 
