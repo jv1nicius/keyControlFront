@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 // Custom Components
 import { ItemContent } from 'components/menu/ItemContent';
-import { SearchBar } from 'components/navbar/searchBar/SearchBar';
+// import { SearchBar } from 'components/navbar/searchBar/SearchBar';
 import { SidebarResponsive } from 'components/sidebar/Sidebar';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -54,7 +54,7 @@ export default function HeaderLinks(props) {
       borderRadius="30px"
       boxShadow={shadow}
     >
-      <SearchBar
+      {/* <SearchBar
         mb={() => {
           if (secondary) {
             return { base: '10px', md: 'unset' };
@@ -63,8 +63,8 @@ export default function HeaderLinks(props) {
         }}
         me="10px"
         borderRadius="30px"
-      />
-      <Flex
+      /> */}
+      {/* <Flex
         bg={ethBg}
         display={secondary ? 'flex' : 'none'}
         borderRadius="30px"
@@ -97,9 +97,9 @@ export default function HeaderLinks(props) {
             ETH
           </Text>
         </Text>
-      </Flex>
+      </Flex> */}
       <SidebarResponsive routes={routes} />
-      <Menu>
+      {/* <Menu>
         <MenuButton p="0px">
           <Icon
             mt="6px"
@@ -156,9 +156,9 @@ export default function HeaderLinks(props) {
             </MenuItem>
           </Flex>
         </MenuList>
-      </Menu>
+      </Menu> */}
 
-      <Menu>
+      {/* <Menu>
         <MenuButton p="0px">
           <Icon
             mt="6px"
@@ -218,7 +218,7 @@ export default function HeaderLinks(props) {
             </Link>
           </Flex>
         </MenuList>
-      </Menu>
+      </Menu> */}
 
       <Button
         variant="no-hover"
@@ -238,7 +238,7 @@ export default function HeaderLinks(props) {
           as={colorMode === 'light' ? IoMdMoon : IoMdSunny}
         />
       </Button>
-      <Menu>
+      {/* <Menu>
         <MenuButton p="0px">
           <Avatar
             _hover={{ cursor: 'pointer' }}
@@ -301,7 +301,7 @@ export default function HeaderLinks(props) {
             </MenuItem>
           </Flex>
         </MenuList>
-      </Menu>
+      </Menu> */}
     </Flex>
   );
 }

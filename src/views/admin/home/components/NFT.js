@@ -5,6 +5,7 @@ import {
     Image,
     Text,
     useColorModeValue,
+    Button
 } from "@chakra-ui/react";
 // Custom components
 import Card from "components/card/Card.js";
@@ -12,7 +13,7 @@ import Card from "components/card/Card.js";
 import React, { useState } from "react";
 
 export default function NFT(props) {
-    const { image = "", name, text} = props;
+    const { image = "", name, onOpen, estado = "Livre" } = props;
     const [like, setLike] = useState(false);
     const textColor = useColorModeValue("navy.700", "white");
     const textColorBid = useColorModeValue("brand.500", "white");
@@ -23,8 +24,8 @@ export default function NFT(props) {
                 <Box mb={{ base: "20px", "2xl": "20px" }} position='relative'>
                     <Image
                         src={image}
-                        w={{ base: "150px", "3xl": "100%" }}
-                        h={{ base: "150px", "3xl": "100%" }}
+                        w={{ base: "100px", "3xl": "100%" }}
+                        h={{ base: "100px", "3xl": "100%" }}
                         borderRadius='20px'
                     />
                 </Box>
@@ -45,16 +46,15 @@ export default function NFT(props) {
                         me='14px'>
                         {name}
                     </Text>
+                    <Button
+                        colorScheme="green"
+                        variant="outline"
+                        onClick={onOpen}
+                        isDisabled={estado !== "Livre"}
+                    >
+                        Reservar
+                    </Button>
                 </Flex>
-                    <Text
-                        color='secondaryGray.600'
-                        fontSize={{
-                            base: "sm",
-                        }}
-                        fontWeight='400'
-                        me='14px'>
-                        {text}
-                    </Text>
             </Flex>
         </Card>
     );

@@ -31,7 +31,7 @@ import {
 } from "@chakra-ui/react";
 import ReservaModal from "components/modal/ReservaModal";
 import React, { useState, useEffect } from "react";
-import NFT from "components/card/NFT"
+import NFT from "../home/components/NFT";
 import classroomIcon from "assets/img/nfts/classroomIcon-removebg-preview.png";
 import ColumnsTable from "views/admin/reservar/components/ColumnsTable";
 import { columnsDataReservas } from "views/admin/reservar/variables/columnsData";
