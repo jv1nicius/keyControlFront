@@ -11,7 +11,13 @@ pipeline {
                 checkout scm
             }
         }
-        
+        stage('install docker'){
+            steps {
+                sh '''
+                apk add --no-cache docker
+                '''
+            }
+        }
         stage('Build') {
             steps {
                 script {
