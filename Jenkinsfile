@@ -13,7 +13,7 @@ pipeline {
                 script {
                     // Aqui você garante que está no contexto adequado (com acesso ao workspace)
                     node {
-                        sh 'npm install'
+                        sh 'npm install  react@18 react-dom@18'
                         sh 'CI=false npm run build'
                     }
                 }
