@@ -1,19 +1,11 @@
 pipeline {
     agent {
         docker {
-            image 'node:20-alpine'
-            args '-u root:root'
+            image 'node:20.2.0-alpine3.17'
         }
     }
 
     stages {
-
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Install') {
             steps {
                 sh 'npm install react@18 react-dom@18'
@@ -24,15 +16,6 @@ pipeline {
             steps {
                 sh 'CI=false npm run build'
             }
-        }
-    }
-
-    post {
-        success {
-            echo "Build realizado com sucesso!"
-        }
-        failure {
-            echo "Pipeline falhou!"
         }
     }
 }
