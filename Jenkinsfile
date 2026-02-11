@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {            
-            image 'node:20.2.0-alpine3.17'
+            image 'docker:latest'
             args '-p 3000:3000' 
         }
     }
@@ -11,19 +11,15 @@ pipeline {
                 checkout scm
             }
         }
-        stage('install docker'){
-            steps {
-                sh '''apk add --no-cache sudo && sudo apk add --no-cache docker '''
-            }
-        }
+        
         stage('Build') {
             steps {
                 script {
                     // Aqui você garante que está no contexto adequado (com acesso ao workspace)
-                    node {
+                     
                         sh 'npm install  react@18 react-dom@18'
                         sh 'CI=false npm run build'
-                    }
+                    
                 }
             }
         }
