@@ -13,9 +13,7 @@ pipeline {
         }
         stage('install docker'){
             steps {
-                sh '''
-                apk add --no-cache docker
-                '''
+                sh '''apk add --no-cache sudo && sudo apk add --no-cache docker '''
             }
         }
         stage('Build') {
