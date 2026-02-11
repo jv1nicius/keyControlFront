@@ -29,8 +29,9 @@ pipeline {
                     }
 
                     // Construir e fazer push da imagem Docker
-                    sh "docker build -t your-dockerhub-username/your-image-name:latest ."
-                    sh "docker push your-dockerhub-username/your-image-name:latest"
+                    sh "docker build -t jv1nicius/keycontrolfront:latest ."
+                    sh "docker tag keycontrolfront jv1nicius/keycontrolfront:latest"
+                    sh "docker push jv1nicius/keycontrolfront:latest"
                 }
             }
         }
