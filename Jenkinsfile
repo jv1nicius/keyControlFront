@@ -33,7 +33,7 @@ pipeline {
                     }
 
                     // Construir e fazer push da imagem Docker
-                    sh "docker build -t jv1nicius/keycontrolfront:latest ."
+                    sh "docker build -t keycontrolfront ."
                     sh "docker tag keycontrolfront jv1nicius/keycontrolfront:latest"
                     sh "docker push jv1nicius/keycontrolfront:latest"
                 }
