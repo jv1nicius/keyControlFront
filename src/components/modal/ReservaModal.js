@@ -1,14 +1,12 @@
+import React, { useState, useEffect, useRef } from "react";
 import {
-    Avatar,
     Box,
     Flex,
-    FormLabel,
-    Icon,
+    Input,
     Select,
-    SimpleGrid,
-    useColorModeValue,
-    Text, Input,
-    useDisclosure, Button, FormControl,
+    Button,
+    FormControl,
+    FormLabel,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -17,195 +15,202 @@ import {
     ModalBody,
     ModalCloseButton,
 } from "@chakra-ui/react";
-import React, { useState, useEffect } from "react";
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { toast } from "react-toastify";
 
-import { ToastContainer, toast } from 'react-toastify';
-
-function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
-    const initialRef = React.useRef();
-    const [cleanModal, setCleanModal] = useState(false)
-    const [isEdit, setIsEdit] = useState(false)
+function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis, salas, onSave }) {
+    const initialRef = useRef();
+    const [isEdit, setIsEdit] = useState(false);
 
     useEffect(() => {
-        if (reserva && reserva.is_edit) {
-            setIsEdit(true);
-        } else {
-            setIsEdit(false);
-        }
+        setIsEdit(!!reserva);
     }, [reserva]);
 
     const validationSchema = Yup.object({
-        responsavel_id: Yup.number().required('Responsável é obrigatório').positive('Deve ser um número positivo').integer('Deve ser um número inteiro'),
-        data: Yup.date().required('Data é obrigatória').nullable(),
-        hora_inicio: Yup.string().required('Hora de início é obrigatória'),
-        hora_fim: Yup.string().required('Hora de fim é obrigatória'),
+        sala_id: Yup.number().required().positive().integer(),
+        responsavel_id: Yup.number().required().positive().integer(),
+        data_inicio: Yup.date().required(),
+        data_fim: Yup.date()
+            .required()
+            .min(Yup.ref("data_inicio"), "Data fim deve ser maior ou igual"),
+        hora_inicio: Yup.string().required(),
+        hora_fim: Yup.string()
+            .required()
+            .test("hora-fim-maior", "Hora fim deve ser maior que hora início", function (value) {
+                const { hora_inicio } = this.parent;
+                return value > hora_inicio;
+            }),
+        frequencia: Yup.string().required(),
+        dias_semana: Yup.array().when("frequencia", {
+            is: (val) => ["semanal", "quinzenal"].includes(val),
+            then: (schema) => schema.min(1, "Selecione ao menos um dia da semana"),
+            otherwise: (schema) => schema.notRequired(),
+        }),
     });
-
-    const formatDateForInput = (dateString) => {
-        const date = new Date(dateString);
-        const isoString = date.toISOString();
-        return isoString.slice(0, 16);
-    };
-
-    const combineDateAndTime = (date, time) => {
-        if (!date || !time) return '';
-    
-        const localDateTime = new Date(`${date}T${time}:00`);
-    
-        return localDateTime.toLocaleString('sv-SE');
-    };
-    
-
-
-
-    const postData = async (dataToSend) => {
-        try {
-            const response = await fetch(`http://localhost:5000/reservas`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSend),
-            });
-
-            if (response.ok) {
-                const responseData = await response.json();
-                console.log('Resposta do servidor:', responseData);
-                toast.success("Reserva Realizada!", {theme: "colored"})
-                setCleanModal(true);
-            } else {
-                console.error('Erro na requisição:', response.statusText);
-                toast.error("Erro ao Realizar Reserva!", {theme: "colored"})
-                setCleanModal(false);
-            }
-        } catch (err) {
-            console.error('Erro ao enviar dados:', err);
-            setCleanModal(false);
-        }
-    };
-
-    const updateData = async (dataToSend) => {
-        try {
-            const response = await fetch(`http://localhost:5000/reservas/${reserva.reserva_id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSend),
-            });
-
-            if (response.ok) {
-                toast.success("Reserva Atualizada!", {theme: "colored"})
-                setCleanModal(true);
-            } else {
-                toast.error("Erro ao Atualizar Reserva", {theme: "colored"})
-                console.error('Erro na requisição:', response.statusText);
-                setCleanModal(false);
-            }
-        } catch (err) {
-            console.error('Erro ao enviar dados:', err);
-            setCleanModal(false);
-        }
-    };
 
     const handleSave = async (values) => {
         const novaReserva = {
-            "sala_id": reserva.sala_id,
-            "responsavel_id": values.responsavel_id,
-            "data_hora_inicio": combineDateAndTime(values.data, values.hora_inicio),
-            "data_hora_fim": combineDateAndTime(values.data, values.hora_fim),
+            sala_id: Number(values.sala_id),
+            responsavel_id: Number(values.responsavel_id),
+            data_inicio: values.data_inicio,
+            data_fim: values.data_fim,
+            hora_inicio: values.hora_inicio,
+            hora_fim: values.hora_fim,
+            frequencia: values.frequencia,
+            status: isEdit ? values.status : "ativa",
+            dias_semana: ["semanal", "quinzenal", "mensal"].includes(values.frequencia)
+                ? values.dias_semana
+                : [],
+        };
+
+        let responseData = null;
+
+        try {
+            const url = isEdit
+                ? `http://localhost:5000/reservas/${reserva.reserva_id}`
+                : "http://localhost:5000/reservas";
+
+            const response = await fetch(url, {
+                method: isEdit ? "PUT" : "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(novaReserva),
+            });
+
+            if (!response.ok) throw new Error("Erro ao salvar reserva");
+
+            responseData = await response.json();
+            toast.success(isEdit ? "Reserva atualizada!" : "Reserva realizada!", { theme: "colored" });
+
+            if (typeof onSave === "function") onSave(responseData);
+        } catch (err) {
+            console.error(err);
+            toast.error(isEdit ? "Erro ao atualizar reserva!" : "Erro ao realizar reserva!", { theme: "colored" });
         }
 
-        if (isEdit) {
-            await updateData(novaReserva)
-        } else {
-            await postData(novaReserva)
-        }
-        onClose()
-    }
-
-    const handleClose = () => {
-        onClose()
-    }
+        onClose();
+    };
 
     return (
-        <>
-        {/* <ToastContainer /> */}
-        <Modal
-            initialFocusRef={initialRef}
-            finalFocusRef={finalRef}
-            isOpen={isOpen}
-            onClose={handleClose}
-        >
+        <Modal initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>{reserva?.sala_nome || "Nova Reserva"}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody pb={6}>
                     <Formik
+                        enableReinitialize
                         initialValues={{
-                            responsavel_id: reserva?.responsavel_id || '',
-                            data: reserva?.data_hora_inicio ? formatDateForInput(reserva.data_hora_inicio).slice(0, 10) : '',
-                            hora_inicio: reserva?.data_hora_inicio ? formatDateForInput(reserva.data_hora_inicio).slice(11, 16) : '',
-                            hora_fim: reserva?.data_hora_fim ? formatDateForInput(reserva.data_hora_fim).slice(11, 16) : '',
+                            sala_id: reserva?.sala_id || "",
+                            responsavel_id: reserva?.responsavel_id || "",
+                            data_inicio: reserva?.data_inicio || "",
+                            data_fim: reserva?.data_fim || "",
+                            hora_inicio: reserva?.hora_inicio || "",
+                            hora_fim: reserva?.hora_fim || "",
+                            frequencia: reserva?.frequencia || "única",
+                            dias_semana: reserva?.dias_semana || [],
+                            status: reserva?.status || "ativa",
                         }}
                         validationSchema={validationSchema}
                         onSubmit={handleSave}
                     >
-                        {({ values, handleChange, handleBlur, errors, touched }) => (
+                        {({ values, setFieldValue }) => (
                             <Form>
-                                <FormControl mt={4} isInvalid={touched.responsavel_id && errors.responsavel_id}>
+                                <FormControl mt={4}>
+                                    <FormLabel>Sala</FormLabel>
+                                    <Field as={Select} name="sala_id" placeholder="Selecione uma sala">
+                                        {salas.map((sala) => (
+                                            <option key={sala.sala_id} value={sala.sala_id}>
+                                                {sala.sala_nome}
+                                            </option>
+                                        ))}
+                                    </Field>
+                                </FormControl>
+
+                                <FormControl mt={4}>
                                     <FormLabel>Responsável</FormLabel>
-                                    <Field
-                                        as={Select}
-                                        name="responsavel_id"
-                                        placeholder="Selecione um responsável"
-                                    >
+                                    <Field as={Select} name="responsavel_id" placeholder="Selecione um responsável">
                                         {responsaveis.map((resp) => (
                                             <option key={resp.responsavel_id} value={resp.responsavel_id}>
                                                 {resp.responsavel_nome}
                                             </option>
                                         ))}
                                     </Field>
-                                    <ErrorMessage name="responsavel_id" component="div" style={{ color: 'red' }} />
+                                    <ErrorMessage name="responsavel_id" component="div" style={{ color: "red" }} />
                                 </FormControl>
 
-                                <FormControl mt={4} isInvalid={touched.data && errors.data}>
-                                    <FormLabel>Data</FormLabel>
-                                    <Field
-                                        as={Input}
-                                        name="data"
-                                        type="date"
-                                        placeholder="Selecione a data"
-                                    />
-                                    <ErrorMessage name="data" component="div" style={{ color: 'red' }} />
+                                <FormControl mt={4}>
+                                    <FormLabel>Data Início</FormLabel>
+                                    <Field as={Input} type="date" name="data_inicio" />
                                 </FormControl>
 
-                                <FormControl mt={4} isInvalid={touched.hora_inicio && errors.hora_inicio}>
-                                    <FormLabel>Hora de Início</FormLabel>
-                                    <Field
-                                        as={Input}
-                                        name="hora_inicio"
-                                        type="time"
-                                        placeholder="Selecione a hora de início"
-                                    />
-                                    <ErrorMessage name="hora_inicio" component="div" style={{ color: 'red' }} />
+                                <FormControl mt={4}>
+                                    <FormLabel>Data Fim</FormLabel>
+                                    <Field as={Input} type="date" name="data_fim" />
                                 </FormControl>
 
-                                <FormControl mt={4} isInvalid={touched.hora_fim && errors.hora_fim}>
-                                    <FormLabel>Hora de Fim</FormLabel>
-                                    <Field
-                                        as={Input}
-                                        name="hora_fim"
-                                        type="time"
-                                        placeholder="Selecione a hora de fim"
-                                    />
-                                    <ErrorMessage name="hora_fim" component="div" style={{ color: 'red' }} />
+                                <FormControl mt={4}>
+                                    <FormLabel>Hora Início</FormLabel>
+                                    <Field as={Input} type="time" name="hora_inicio" />
                                 </FormControl>
+
+                                <FormControl mt={4}>
+                                    <FormLabel>Hora Fim</FormLabel>
+                                    <Field as={Input} type="time" name="hora_fim" />
+                                </FormControl>
+
+                                <FormControl mt={4}>
+                                    <FormLabel>Frequência</FormLabel>
+                                    <Field as={Select} name="frequencia">
+                                        <option value="única">Única</option>
+                                        <option value="semanal">Semanal</option>
+                                        <option value="quinzenal">Quinzenal</option>
+                                        <option value="mensal">Mensal</option>
+                                    </Field>
+                                </FormControl>
+
+                                {["semanal", "quinzenal", "mensal"].includes(values.frequencia) && (
+                                    <FormControl mt={4}>
+                                        <FormLabel>Dias da Semana</FormLabel>
+                                        <Flex gap="10px" wrap="wrap">
+                                            {[1, 2, 3, 4, 5, 6, 7].map((dia) => (
+                                                <Button
+                                                    key={dia}
+                                                    size="sm"
+                                                    colorScheme={values.dias_semana.includes(dia) ? "green" : "gray"}
+                                                    variant={values.dias_semana.includes(dia) ? "solid" : "outline"}
+                                                    onClick={() => {
+                                                        const newValue = values.dias_semana.includes(dia)
+                                                            ? values.dias_semana.filter((d) => d !== dia)
+                                                            : [...values.dias_semana, dia];
+                                                        setFieldValue("dias_semana", newValue);
+                                                    }}
+                                                >
+                                                    {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"][dia - 1]}
+                                                </Button>
+                                            ))}
+                                        </Flex>
+                                    </FormControl>
+                                )}
+                                
+                                {isEdit && (
+                                    <FormControl mt={4}>
+                                        <FormLabel>Status</FormLabel>
+                                        <Field as={Select} name="status">
+                                            <option value="ativa">Ativa</option>
+                                            <option value="finalizada">Finalizada</option>
+                                            <option value="cancelada">Cancelada</option>
+                                        </Field>
+                                    </FormControl>
+                                )}
 
                                 <ModalFooter>
                                     <Button colorScheme="green" mr={3} type="submit">
                                         Salvar
                                     </Button>
-                                    <Button colorScheme="red" onClick={handleClose}>Cancelar</Button>
+                                    <Button colorScheme="red" onClick={onClose}>
+                                        Cancelar
+                                    </Button>
                                 </ModalFooter>
                             </Form>
                         )}
@@ -213,7 +218,6 @@ function ReservaModal({ isOpen, onClose, finalRef, reserva, responsaveis }) {
                 </ModalBody>
             </ModalContent>
         </Modal>
-        </>
     );
 }
 

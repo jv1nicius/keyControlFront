@@ -1,18 +1,34 @@
-export const columnsDataReservas = [
-    {
-        Header: "SALA",
-        accessor: "sala",
-    },
-    {
-        Header: "RESPONSAVEL",
-        accessor: "responsavel_id",
-    },
-    {
-        Header: "H.INICIO",
-        accessor: "hora_inicio",
-    },
-    {
-        Header: "H.FINALIZAÇÃO",
-        accessor: "hora_fim",
-    }
+export const columnsDataHistorico = [
+  {
+    Header: "DATA",
+    accessor: "data",
+  },
+  {
+    Header: "SALA",
+    accessor: "sala",
+  },
+  {
+    Header: "CHAVE",
+    accessor: "chave",
+  },
+  {
+    Header: "RESPONSÁVEL",
+    accessor: "responsavel",
+  },
+  {
+    Header: "RETIRADA",
+    accessor: "hora_retirada",
+  },
+  {
+    Header: "PREV. DEV.",
+    accessor: "hora_prevista",
+  },
+  {
+    Header: "DEVOLUÇÃO",
+    accessor: "hora_devolucao",
+  },
+  {
+    Header: "STATUS",
+    accessor: "status",
+  }
 ];

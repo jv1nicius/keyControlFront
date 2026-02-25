@@ -20,17 +20,25 @@
 
 */
 
-// Chakra imports
-import { Box } from "@chakra-ui/react";
-import ColumnsTable from "views/admin/historico/components/ColumnsTable";
-import { columnsDataHistorico } from "views/admin/historico/variables/columnsData";
-
 import React from "react";
 
-export default function Settings() {
-    return (
-        <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
-            <ColumnsTable columnsData={columnsDataHistorico} />
-        </Box>
-    );
+// Chakra imports
+import { Box, useColorModeValue, } from "@chakra-ui/react";
+
+
+import ColumnsTable from "views/admin/responsavel/components/ColumnsTable";
+import { columnsDataProfessores } from "views/admin/responsavel/variables/columnsData";
+
+export default function Marketplace() {
+
+  // Chakra Color Mode
+  const textColor = useColorModeValue("secondaryGray.900", "white");
+  const textColorBrand = useColorModeValue("brand.500", "white");
+  return (
+    <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
+      {/* Main Fields */}
+      <ColumnsTable columnsData={columnsDataProfessores} />
+      {/* Delete Product */}
+    </Box>
+  );
 }
