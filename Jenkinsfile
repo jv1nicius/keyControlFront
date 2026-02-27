@@ -1,49 +1,43 @@
 pipeline {
-    agent {
-        docker {            
-            image 'docker:latest'
-            args '-p 3000:3000' 
-        }
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "jv1nicius/keycontrolfront"
     }
+
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/jv1nicius/keycontrolfront.git'
             }
         }
-        
-        stage('Build') {
+
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Aqui você garante que está no contexto adequado (com acesso ao workspace)
-                     
-                        sh 'npm install  react@18 react-dom@18'
-                        sh 'CI=false npm run build'
-                    
+                    docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
                 }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Image to Docker Hub') {
             steps {
                 script {
-                    // Aqui o login no Docker Hub
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-cred') {
+                        docker.image("${DOCKER_IMAGE}:${BUILD_NUMBER}").push()
+                        docker.image("${DOCKER_IMAGE}:${BUILD_NUMBER}").push("latest")
                     }
-
-                    // Construir e fazer push da imagem Docker
-                    sh "docker build -t keycontrolfront ."
-                    sh "docker tag keycontrolfront jv1nicius/keycontrolfront:latest"
-                    sh "docker push jv1nicius/keycontrolfront:latest"
                 }
             }
         }
 
-        stage('Clean Workspace') {
-            steps {
-                cleanWs()  // Limpeza do workspace ao final
-            }
+    }
+    post {
+        success {
+            echo "Imagem enviada com sucesso 🚀"
+        }
+        failure {
+            echo "Erro na pipeline ❌"
         }
     }
 }
