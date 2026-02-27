@@ -40,12 +40,4 @@ pipeline {
 
     }
 
-    post {
-        success {
-            echo "Imagem enviada e deploy realizado com sucesso 🚀"
-        }
-        failure {
-            echo "Erro na pipeline ❌"
-        }
-    }
 }
