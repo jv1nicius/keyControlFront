@@ -1,20 +1,32 @@
+import { useState } from "react";
+
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Grid from "@mui/material/Grid"
+import IconButton from "@mui/material/IconButton"
+import InputAdornment from "@mui/material/InputAdornment"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 
+import Visibility from "@mui/icons-material/Visibility"
+import VisibilityOff from "@mui/icons-material/VisibilityOff"
+
 import { useForm, Controller } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
-import { Link } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signinSchema } from '../schemas/signinSchema'
+import { Link, useNavigate } from "react-router-dom"
 
 import { useAuth } from "../contexts/hooks/useAuth"
 
 import LoginImg from "../assets/Login-cuate.svg"
+import { radius } from "../layouts/theme/tokens"
+
+import { toast } from 'sonner'
 
 export default function Signin() {
-    const { login } = useAuth();
-    const navigate = useNavigate();
+    const { login } = useAuth()
+    const navigate = useNavigate()
+    const [showPassword, setShowPassword] = useState(false)
 
     const {
         control,
@@ -22,32 +34,23 @@ export default function Signin() {
         formState: { errors, isSubmitting },
         reset,
     } = useForm({
+        resolver: zodResolver(signinSchema),
         defaultValues: {
             email: "",
             senha: ""
         }
-    });
+    })
 
     const onSubmit = async (data) => {
         try {
-            const response = await fetch("http://127.0.0.1:5000/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            console.log(result);
-            login(result.access_token);
+            await login(data.email, data.senha);
             reset();
             navigate("/");
         } catch (error) {
-            console.error(error);
+            toast.error(error.message)
         }
-    };
+    }
+
     return (
         <Box
             sx={{
@@ -67,11 +70,7 @@ export default function Signin() {
                 Bem-Vindo
             </Typography>
 
-            <Grid
-                container
-                sx={{
-                    flex: 1,
-                }}>
+            <Grid container sx={{ flex: 1, }}>
                 <Grid
                     size={5}
                     sx={{
@@ -93,7 +92,6 @@ export default function Signin() {
                 <Grid
                     size={7}
                     sx={{
-                        bgcolor: "#",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center"
@@ -101,8 +99,10 @@ export default function Signin() {
                 >
                     <Box
                         sx={{
-                            bgcolor: "#d4d4d4",
-                            borderRadius: 4,
+                            bgcolor: "background.paper",
+                            border: '1px solid',
+                            borderColor: "divider",
+                            borderRadius: `${radius.lg}px`,
                             padding: 4,
                             width: "90%",
                             height: "90%",
@@ -111,7 +111,7 @@ export default function Signin() {
                             alignItems: "center"
                         }}>
                         <Box
-                            component="form"
+                            component='form'
                             onSubmit={handleSubmit(onSubmit)}
                             sx={{
                                 width: "100%",
@@ -121,12 +121,10 @@ export default function Signin() {
                                 gap: 3,
                                 pt: 5
                             }}
-
                         >
                             <Controller
                                 name="email"
                                 control={control}
-                                rules={{ required: "Digite seu email de usuário" }}
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
@@ -142,7 +140,6 @@ export default function Signin() {
                             <Controller
                                 name="senha"
                                 control={control}
-                                rules={{ required: "Digite sua senha" }}
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
@@ -150,8 +147,26 @@ export default function Signin() {
                                         error={!!errors.senha}
                                         helperText={errors.senha?.message}
                                         variant="outlined"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         fullWidth
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            onClick={() => setShowPassword(!showPassword)}
+                                                            edge="end"
+                                                        >
+                                                            {showPassword ? (
+                                                                <VisibilityOff />
+                                                            ) : (
+                                                                <Visibility />
+                                                            )}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            },
+                                        }}
                                     />
                                 )}
                             />

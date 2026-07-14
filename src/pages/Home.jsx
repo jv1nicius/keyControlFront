@@ -20,7 +20,7 @@ export default function Home() {
     return (
         <>
             <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="sticky" elevation={0} color='#fff'>
+                <AppBar position="sticky" elevation={0}>
                     <Toolbar>
                         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
                             KeyControl
@@ -43,7 +43,10 @@ export default function Home() {
                         minHeight: "45vh",
                     }}
                 >
-                    <Typography variant='h1'>Gestão <br /><span style={{ color: "#1976d2" }}>Inteligente</span> de Chaves</Typography>
+                    <Typography variant='h1'>
+                        Gestão <br />
+                        <Box component="span" sx={{ color: "primary.main" }}>Inteligente</Box> de Chaves
+                    </Typography>
                 </Box>
                 <Box
                     sx={{
@@ -66,16 +69,15 @@ export default function Home() {
                     }}
                 >
                     <Grid size={4}>
-                        <Card sx={{
-                            boxShadow: 0,
-                            borderRadius: 4,
-                            textAlign: "center",
-                            transition: "0.3s",
-                            "&:hover": {
-                                transform: "translateY(-5px)",
-                                boxShadow: 5
-                            }
-                        }}
+                        <Card
+                            sx={{
+                                textAlign: "center",
+                                transition: "0.3s",
+                                "&:hover": {
+                                    transform: "translateY(-5px)",
+                                    boxShadow: 5
+                                }
+                            }}
                         >
                             <CardHeader
                                 avatar={
@@ -83,40 +85,38 @@ export default function Home() {
                                         sx={{
                                             width: 60,
                                             height: 60,
-                                            bgcolor: "#dbeafe",
+                                            bgcolor: "info.light",
                                             borderRadius: "50%",
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
                                             margin: "0 auto",
-
                                         }}
                                     >
-                                        <LockIcon
-                                            fontSize='large'
-                                            sx={{ color: "#407bfc" }}
+                                        <LockIcon fontSize='large' sx={{ color: "info.main" }}
                                         />
                                     </Box>
                                 }
                             />
                             <CardContent sx={{ pt: 0 }}>
                                 <Typography variant='h5'>Controle de Acesso</Typography>
-                                <Typography variant='body2'>Gerencie quem tem acesso a cada sala e monitore o uso das chaves em tempo real.</Typography>
+                                <Typography variant='body2' color='text.secondary'>
+                                    Gerencie quem tem acesso a cada sala e monitore o uso das chaves em tempo real.
+                                </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
 
                     <Grid size={4}>
-                        <Card sx={{
-                            boxShadow: 0,
-                            borderRadius: 4,
-                            textAlign: "center",
-                            transition: "0.3s",
-                            "&:hover": {
-                                transform: "translateY(-5px)",
-                                boxShadow: 5
-                            }
-                        }}
+                        <Card
+                            sx={{
+                                textAlign: "center",
+                                transition: "0.3s",
+                                "&:hover": {
+                                    transform: "translateY(-5px)",
+                                    boxShadow: 5
+                                }
+                            }}
                         >
                             <CardHeader
                                 avatar={
@@ -124,7 +124,7 @@ export default function Home() {
                                         sx={{
                                             width: 60,
                                             height: 60,
-                                            bgcolor: "#dbfce7",
+                                            bgcolor: "success.light",
                                             borderRadius: "50%",
                                             display: "flex",
                                             alignItems: "center",
@@ -133,31 +133,29 @@ export default function Home() {
 
                                         }}
                                     >
-                                        <SecurityIcon
-                                            fontSize='large'
-                                            sx={{ color: "#43c071" }}
-                                        />
+                                        <SecurityIcon fontSize='large' sx={{ color: "success.main" }} />
                                     </Box>
                                 }
                             />
                             <CardContent sx={{ pt: 0 }}>
                                 <Typography variant='h5'>Segurança</Typography>
-                                <Typography variant='body2'>Sistema seguro com autenticação e registro de todas as movimentações de chaves.</Typography>
+                                <Typography variant='body2' color='text.secondary'>
+                                    Sistema seguro com autenticação e registro de todas as movimentações de chaves.
+                                </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
 
                     <Grid size={4}>
-                        <Card sx={{
-                            boxShadow: 0,
-                            borderRadius: 4,
-                            textAlign: "center",
-                            transition: "0.3s",
-                            "&:hover": {
-                                transform: "translateY(-5px)",
-                                boxShadow: 5
-                            }
-                        }}
+                        <Card
+                            sx={{
+                                textAlign: "center",
+                                transition: "0.3s",
+                                "&:hover": {
+                                    transform: "translateY(-5px)",
+                                    boxShadow: 5
+                                }
+                            }}
                         >
                             <CardHeader
                                 avatar={
@@ -165,7 +163,7 @@ export default function Home() {
                                         sx={{
                                             width: 60,
                                             height: 60,
-                                            bgcolor: "#f3e8ff",
+                                            bgcolor: "primary.soft",
                                             borderRadius: "50%",
                                             display: "flex",
                                             alignItems: "center",
@@ -174,21 +172,19 @@ export default function Home() {
 
                                         }}
                                     >
-                                        <KeyIcon
-                                            fontSize='large'
-                                            sx={{ color: "#ab3efa" }}
-                                        />
+                                        <KeyIcon fontSize='large' sx={{ color: "primary.main" }} />
                                     </Box>
                                 }
                             />
                             <CardContent sx={{ pt: 0 }}>
                                 <Typography variant='h5'>Gestão Simplificada</Typography>
-                                <Typography variant='body2'>Interface intuitiva para cadastro de professores, salas e controle de empréstimos.</Typography>
+                                <Typography variant='body2' color='text.secondary'>
+                                    Interface intuitiva para cadastro de professores, salas e controle de empréstimos.
+                                </Typography>
                             </CardContent>
                         </Card>
                     </Grid>
                 </Grid>
-
             </Container>
         </>
     )

@@ -1,49 +1,76 @@
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
 import { useForm, Controller } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { responsibleSchema } from "../schemas/responsibleSchema";
+import { Link, useNavigate } from "react-router-dom";
 
 import SignupImg from "../assets/Signup.svg"
 
+import { useAuth } from "../contexts/hooks/useAuth";
+import { api } from "../services/api";
+import { radius } from "../layouts/theme/tokens"
+
+import { toast } from 'sonner';
+
 export default function Signup() {
+    const { login } = useAuth();
+    const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [campoAtivo, setCampoAtivo] = useState(null);
+
     const {
         control,
         handleSubmit,
         formState: { errors, isSubmitting },
         reset,
+        setError,
     } = useForm({
+        resolver: zodResolver(responsibleSchema),
         defaultValues: {
-            usuario_nome: "",
+            responsavel_nome: "",
+            responsavel_cpf: "",
+            responsavel_data_nascimento: "",
+            responsavel_siap: "",
+            responsavel_matricula: "",
             email: "",
-            funcao: "",
-            senha: ""
+            senha: "",
+            ativo: true
         }
     });
 
     const onSubmit = async (data) => {
         try {
-            const response = await fetch("http://127.0.0.1:5000/usuarios", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            console.log(result);
-            login(result.access_token);
+            await api.post("/responsavel", data);
+            await login(data.email, data.senha);
             reset();
             navigate("/");
         } catch (error) {
-            console.error(error);
+            if (error.response?.status === 422) {
+                const { detalhes, erro } = error.response.data;
+                toast.error(erro);
+
+                Object.entries(detalhes).forEach(([campo, mensagens]) => {
+                    setError(campo, {
+                        type: "server",
+                        message: mensagens[0],
+                    });
+                });
+                return;
+            }
+            toast.error("Ocorreu um erro inesperado.")
         }
-    };
+    }
 
     return (
         <Box
@@ -86,7 +113,6 @@ export default function Signup() {
                 <Grid
                     size={7}
                     sx={{
-                        bgcolor: "#",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center"
@@ -94,8 +120,10 @@ export default function Signup() {
                 >
                     <Box
                         sx={{
-                            bgcolor: "#d4d4d4",
-                            borderRadius: 4,
+                            bgcolor: "background.paper",
+                            border: "1px solid",
+                            borderColor: "divider",
+                            borderRadius: `${radius.lg}px`,
                             padding: 4,
                             width: "90%",
                             height: "90%",
@@ -126,15 +154,14 @@ export default function Signup() {
                             }}
                         >
                             <Controller
-                                name="usuario_nome"
+                                name="responsavel_nome"
                                 control={control}
-                                rules={{ required: "Digite seu nome" }}
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
                                         label="Nome de usuário"
-                                        error={!!errors.usuario_nome}
-                                        helperText={errors.usuario_nome?.message}
+                                        error={!!errors.responsavel_nome}
+                                        helperText={errors.responsavel_nome?.message}
                                         variant="outlined"
                                         fullWidth
                                         autoFocus
@@ -144,7 +171,6 @@ export default function Signup() {
                             <Controller
                                 name="email"
                                 control={control}
-                                rules={{ required: "Digite seu email" }}
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
@@ -157,26 +183,156 @@ export default function Signup() {
                                 )}
                             />
                             <Controller
-                                name="funcao"
+                                name="responsavel_cpf"
                                 control={control}
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Função"
-                                        variant="outlined"
+                                        label="CPF"
+                                        error={!!errors.responsavel_cpf}
+                                        helperText={errors.responsavel_cpf?.message}
+                                        fullWidth
+                                        onChange={(e) => {
+                                            const value = e.target.value
+                                                .replace(/\D/g, "")
+                                                .slice(0, 11);
+
+                                            const cpfFormatado = value
+                                                .replace(/(\d{3})(\d)/, "$1.$2")
+                                                .replace(/(\d{3})(\d)/, "$1.$2")
+                                                .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+                                            field.onChange(cpfFormatado);
+                                        }}
+                                    />
+                                )}
+                            />
+                            <Controller
+                                name="responsavel_data_nascimento"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        type="date"
+                                        label="Data de nascimento"
+                                        InputLabelProps={{ shrink: true }}
+                                        error={!!errors.responsavel_data_nascimento}
+                                        helperText={errors.responsavel_data_nascimento?.message}
                                         fullWidth
                                     />
                                 )}
                             />
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    gap: 2,
+                                    width: "100%",
+                                    alignItems: "center"
+                                }}
+                            >
+                                {(campoAtivo === null || campoAtivo === "siap") && (
+                                    <Box
+                                        sx={{
+                                            flex: campoAtivo === "siap" ? 1 : 0.5,
+                                            transition: "all 0.3s ease"
+                                        }}
+                                        onClick={() => setCampoAtivo("siap")}
+                                    >
+                                        <Controller
+                                            name="responsavel_siap"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="SIAP"
+                                                    error={!!errors.responsavel_siap}
+                                                    helperText={errors.responsavel_siap?.message}
+                                                    fullWidth
+                                                    onChange={(e) => {
+                                                        const value = e.target.value
+                                                            .replace(/\D/g, "")
+                                                            .slice(0, 7);
+
+                                                        field.onChange(value);
+                                                        if (value === "") {
+                                                            setCampoAtivo(null);
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </Box>
+                                )}
+
+                                {campoAtivo === null && (
+                                    <Typography>Ou</Typography>
+                                )}
+
+                                {(campoAtivo === null || campoAtivo === "matricula") && (
+                                    <Box
+                                        sx={{
+                                            flex: campoAtivo === "matricula" ? 1 : 0.5,
+                                            transition: "all 0.3s ease"
+                                        }}
+                                        onClick={() => setCampoAtivo("matricula")}
+                                    >
+                                        <Controller
+                                            name="responsavel_matricula"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="Matrícula"
+                                                    error={!!errors.responsavel_matricula}
+                                                    helperText={errors.responsavel_matricula?.message}
+                                                    fullWidth
+                                                    onChange={(e) => {
+                                                        const value = e.target.value
+                                                            .replace(/\D/g, "")
+                                                            .slice(0, 12);
+
+                                                        field.onChange(value);
+                                                        if (value === "") {
+                                                            setCampoAtivo(null);
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </Box>
+                                )}
+                            </Box>
+
                             <Controller
                                 name="senha"
                                 control={control}
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
+                                        type={showPassword ? "text" : "password"}
                                         label="Senha"
                                         variant="outlined"
+                                        error={!!errors.senha}
+                                        helperText={errors.senha?.message}
                                         fullWidth
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            onClick={() => setShowPassword(!showPassword)}
+                                                            edge="end"
+                                                        >
+                                                            {showPassword ? (
+                                                                <VisibilityOff />
+                                                            ) : (
+                                                                <Visibility />
+                                                            )}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            },
+                                        }}
                                     />
                                 )}
                             />

@@ -26,17 +26,30 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { Outlet, Link } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
+import { useAuth } from "../contexts/hooks/useAuth";
 
 const drawerWidth = 240;
 
+const ROLES = {
+    ADMIN: "admin",
+    RESPONSAVEL: "responsavel"
+};
+
 const menuItems = [
     { text: "Home", path: "/" },
-    { text: "Retiradas", path: "/keycheckout" }
+    { text: "Retiradas", path: "/retiradas" },
+    { text: "Reservas", text2: "Solicitação de Chaves", text3: "Central de Chaves", path: "/reservas" },
 ];
+const adminItems = [
+    { text: "Salas", path: "/salas" },
+    { text: "Chaves", path: "/chaves" },
+    { text: "Responsáveis", path: "/responsaveis" }
+]
+/** 
 const bottomMenuItems = [
     { text: "Configurações", path: "/settings", icon: <SettingsIcon /> }
 ];
-
+*/
 const openedMixin = (theme) => ({
     width: drawerWidth,
     transition: theme.transitions.create('width', {
@@ -123,7 +136,7 @@ export default function SideBar() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(true);
 
-    const [hora, setHora] = React.useState(new Date())
+    const { user } = useAuth();
 
     const location = useLocation();
     const pathnames = location.pathname.split('/').filter((x) => x);
@@ -134,14 +147,6 @@ export default function SideBar() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-
-    React.useEffect(() => {
-        const intervalo = setInterval(() => {
-            setHora(new Date());
-        }, 60000); // atualiza a cada 1s
-
-        return () => clearInterval(intervalo); // limpa o intervalo
-    }, []);
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -201,26 +206,24 @@ export default function SideBar() {
                         })}
                     </Breadcrumbs>
 
-                    <Typography>
-                        {hora.toLocaleDateString("pt-BR", { weekday: "long" })} - {hora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                    </Typography>
                     <IconButton
                         component={Link}
                         to="/profile"
                         size="large"
                         color="inherit"
-                        sx={{ 
+                        sx={{
                             marginLeft: 'auto',
                             transition: "0.2s",
                             "&:hover": {
                                 boxShadow: 5
                             }
-                         }}
+                        }}
                     >
                         <AccountCircle />
                     </IconButton>
                 </Toolbar>
             </AppBar>
+
             <Drawer variant="permanent" open={open}>
                 <DrawerHeader
                     sx={{
@@ -268,6 +271,67 @@ export default function SideBar() {
                             </ListItem>
                         ))}
                 </List>
+
+                <Typography variant="overline">
+                    Gerenciamento
+                </Typography>
+                <List>
+                    {adminItems.map((item, index) => (
+                        <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
+                            <ListItemButton
+                                component={Link}
+                                to={item.path}
+                                sx={{
+                                    minHeight: 48,
+                                    px: 2.5,
+                                    justifyContent: open ? 'initial' : 'center',
+                                }}
+                            >
+                                <ListItemIcon
+                                    sx={{
+                                        minWidth: 0,
+                                        justifyContent: 'center',
+                                        mr: open ? 3 : 'auto',
+                                    }}
+                                >
+                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={item.text}
+                                    sx={{ opacity: open ? 1 : 0 }}
+                                />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+
+                <Typography variant="overline">
+                    Relatórios
+                </Typography>
+                <ListItem disablePadding sx={{ display: 'block' }}>
+                    <ListItemButton
+                        component={Link}
+                        to={"/historico"}
+                        sx={{
+                            minHeight: 48,
+                            px: 2.5,
+                            justifyContent: open ? 'initial' : 'center',
+                        }}>
+                        <ListItemIcon
+                            sx={{
+                                minWidth: 0,
+                                justifyContent: 'center',
+                                mr: open ? 3 : 'auto',
+                            }}
+                        >
+
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={"Histórico"}
+                            sx={{ opacity: open ? 1 : 0 }}
+                        />
+                    </ListItemButton>
+                </ListItem>
 
                 <Box sx={{ flexGrow: 1 }} />
                 <Divider />
