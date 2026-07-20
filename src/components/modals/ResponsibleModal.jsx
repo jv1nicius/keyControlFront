@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react"
 
-import { useForm, Controller } from 'react-hook-form'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
+
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+
 import { api } from '../../services/api'
-import { toast } from 'sonner';
-import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControlLabel, Switch } from "@mui/material";
 import { responsibleUpdateSchema } from "../../schemas/responsibleSchema";
 
 export default function ResponsibleModal({ open, onClose, onSuccess, responsible }) {

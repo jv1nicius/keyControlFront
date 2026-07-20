@@ -10,8 +10,8 @@ import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import KeyCheckoutModal from '../components/modal/KeyCheckoutModal';
-import ReservationCard from '../components/modal/ReservationCard';
+import KeyCheckoutModal from '../components/modals/KeyCheckoutModal';
+import ReservationCard from '../components/cards/ReservationCard';
 
 import { useAuth } from '../contexts/hooks/useAuth';
 import { api } from "../services/api";

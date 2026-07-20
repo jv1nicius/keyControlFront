@@ -1,10 +1,17 @@
-import { useState, useEffect } from 'react'
-import { api } from '../../services/api'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { useEffect, useState } from 'react'
+
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { withdrawalSchema } from '../../schemas/withdrawals'
 import { toast } from "sonner";
+
+import { api } from '../../services/api'
+import { withdrawalSchema } from '../../schemas/withdrawals'
 
 export default function WithdrawalsModal({ open, onClose, user, classroom }) {
     const [submitting, setSubmitting] = useState(false)
@@ -18,11 +25,7 @@ export default function WithdrawalsModal({ open, onClose, user, classroom }) {
 
     const loadKeys = async (sala_id) => {
         const { data } = await api.get(`/chaves`);
-        console.log("Sala:", sala_id);
-        console.log("Chaves:", data);
         setKeys(data.filter(key => key.sala_id === sala_id));
-        console.log(`Chaves da sala :${sala_id}`);
-
     };
 
     const {
@@ -46,22 +49,26 @@ export default function WithdrawalsModal({ open, onClose, user, classroom }) {
 
     const onSubmit = async (data) => {
         try {
-            console.log(data);
-            console.log(user.user_id)
-            await api.post('/retiradas', data)
-            reset()
-            onClose()
-            toast.success('Chave retirada!')
+            await toast.promise(
+                api.post('/retiradas', data),
+                {
+                    loading: 'Retirando chave...',
+                    success: 'Chave retirada!',
+                    error: (error) =>
+                        error.response?.data?.message || 'Erro ao retirar chave',
+                }
+            );
+            reset();
+            onClose();
         } catch (error) {
             console.error(error)
-            toast.error(error)
+        } finally {
+
         }
     }
 
-    const onError = (errors) => {
-        console.log("ERROS", errors);
-        console.log(keys)
-    };
+    const onError = (errors) => { };
+
     useEffect(() => {
         if (!user) return;
         if (open && keys.length > 0) {
@@ -72,7 +79,7 @@ export default function WithdrawalsModal({ open, onClose, user, classroom }) {
             const horaRetirada = now.toTimeString().slice(0, 5);
 
             const previsao = new Date();
-            previsao.setHours(previsao.getHours() + 2);
+            previsao.setHours(previsao.getHours() + 1);
 
             const horaPrevista = previsao.toTimeString().slice(0, 5);
 

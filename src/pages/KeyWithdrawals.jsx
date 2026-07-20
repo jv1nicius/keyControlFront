@@ -13,9 +13,9 @@ import Typography from '@mui/material/Typography';
 import { api } from '../services/api'
 import { useAuth } from "../contexts/hooks/useAuth";
 
-import KeyCheckoutModal from '../components/modal/KeyCheckoutModal';
-import WithdrawalsCard from '../components/modal/WithdrawalsCard';
-import WithdrawalsModal from '../components/modal/WithdrawalsModal';
+import KeyCheckoutModal from '../components/modals/KeyCheckoutModal';
+import WithdrawalsCard from '../components/cards/WithdrawalsCard';
+import WithdrawalsModal from '../components/modals/WithdrawalsModal';
 
 export default function Withdrawals() {
     const [classrooms, setClassrooms] = useState([])
@@ -52,7 +52,7 @@ export default function Withdrawals() {
 
     const loadWithdrawals = async () => {
         try {
-            const { data } = await api.get('retiradas')
+            const { data } = await api.get('/retiradas')
             setWithdrawals(data)
         } catch (error) {
             console.error(error);

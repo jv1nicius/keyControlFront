@@ -24,7 +24,6 @@ import Typography from "@mui/material/Typography";
 import FilterListIcon from "@mui/icons-material/FilterList";
 
 import { api } from "../services/api";
-
 import { getStatusChipColor } from "../layouts/theme/statusChip";
 
 const STATUS_LABELS = {

@@ -1,9 +1,7 @@
-import * as React from 'react';
-
-import HomeIcon from '@mui/icons-material/Home';
-import EventIcon from '@mui/icons-material/Event';
 import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn';
+import EventIcon from '@mui/icons-material/Event';
 import HistoryIcon from '@mui/icons-material/History';
+import HomeIcon from '@mui/icons-material/Home';
 
 import BaseLayout from './BaseLayout';
 
@@ -15,5 +13,5 @@ const menuItems = [
 ];
 
 export default function ResponsibleLayout() {
-    return <BaseLayout menuItems={menuItems} enableSearch/>;
+    return <BaseLayout menuItems={menuItems} enableSearch />;
 }

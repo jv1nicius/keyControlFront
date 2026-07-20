@@ -1,35 +1,22 @@
 import { z } from "zod"
 
-function validarCPF(cpf) {
+function validateCPF(cpf) {
     cpf = cpf.replace(/\D/g, "");
-
     if (cpf.length !== 11) return false;
-
-    // Bloqueia CPFs como 111.111.111-11
     if (/^(\d)\1+$/.test(cpf)) return false;
-
     let soma = 0;
-
     for (let i = 0; i < 9; i++) {
         soma += Number(cpf[i]) * (10 - i);
     }
-
     let resto = (soma * 10) % 11;
-
     if (resto === 10) resto = 0;
-
     if (resto !== Number(cpf[9])) return false;
-
     soma = 0;
-
     for (let i = 0; i < 10; i++) {
         soma += Number(cpf[i]) * (11 - i);
     }
-
     resto = (soma * 10) % 11;
-
     if (resto === 10) resto = 0;
-
     return resto === Number(cpf[10]);
 }
 
@@ -41,32 +28,57 @@ export const responsibleSchema = z.object({
 
     responsavel_siap: z
         .string()
-        .length(7, "O SIAP deve ter exatamente 7 caracteres")
+        .trim()
+        .transform((value) => value === "" ? undefined : value)
         .optional()
-        .or(z.literal("")),
+        .refine((value) => !value || value.length === 7, {
+            message: "O SIAP deve ter exatamente 7 caracteres"
+        }),
 
     responsavel_cpf: z
         .string()
         .regex(
             /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
             "CPF inválido"
-        ).refine((cpf) => validarCPF(cpf), {
+        ).refine((cpf) => validateCPF(cpf), {
             message: "CPF inválido"
         }),
 
     responsavel_matricula: z
         .string()
-        .min(7, "A matrícula deve ter no mínimo 7 dígitos!")
-        .max(15, "A senha deve ter no máximp 15 dígitos!")
+        .trim()
+        .transform((value) => value === "" ? undefined : value)
         .optional()
-        .or(z.literal("")),
+        .refine((value) => !value || value.length === 12, {
+            message: "A matrícula deve ter exatamente 12 dígitos"
+        }),
 
     responsavel_data_nascimento: z
         .string()
-        .min(1, "Informe a data de nascimento"),
+        .min(1, "Informe a data de nascimento")
+        .refine((data) => {
+            const nascimento = new Date(data);
+            const hoje = new Date();
+
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+
+            const mes = hoje.getMonth() - nascimento.getMonth();
+
+            if (
+                mes < 0 ||
+                (mes === 0 && hoje.getDate() < nascimento.getDate())
+            ) {
+                idade--;
+            }
+
+            return idade >= 12 && idade <= 80;
+        }, {
+            message: "O responsável deve ter entre 12 e 80 anos"
+        }),
 
     email: z
-        .email("Email inválido"),
+        .email("Email inválido")
+        .transform((valor) => valor.trim().toLowerCase()),
 
     senha: z
         .string()

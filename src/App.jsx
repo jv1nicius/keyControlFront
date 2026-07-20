@@ -1,23 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 
-import AdminLayout from "./layouts/AdminLayout";
-import ResponsibleLayout from "./layouts/ResponsibleLayout";
-
-import Home from "./pages/Home"
-import Signin from "./pages/Signin";
-import Signup from "./pages/Signup";
-
-import Withdrawals from "./pages/Withdrawals"
-import Dashboard from "./pages/Dashboard";
-import Settings from "./pages/Settings";
-import KeyCheckout from "./pages/KeyCheckout";
-import Profile from "./pages/Profile"
+import Rooms from "./pages/Rooms"
+import Dashboard from "./pages/Dashboard"
 import History from "./pages/History"
-import ClassRoom from "./pages/Classroom"
-import Key from "./pages/Keys"
-import Responsible from "./pages/Responsible"
-import { useAuth } from "./contexts/hooks/useAuth";
+import Home from "./pages/Home"
+import Keys from "./pages/Keys"
+import KeyReservations from "./pages/KeyReservations"
+import Profile from "./pages/Profile"
+import ResponsiblePerson from "./pages/ResponsiblePersons"
+import SignIn from "./pages/SignIn"
+import SignUp from "./pages/SignUp"
+import KeyWithdrawals from "./pages/KeyWithdrawals"
 
+import AdminLayout from "./layouts/AdminLayout"
+import ResponsibleLayout from "./layouts/ResponsibleLayout"
+
+import { useAuth } from "./contexts/hooks/useAuth"
 import { Toaster } from 'sonner';
 
 function App() {
@@ -26,7 +24,6 @@ function App() {
     if (loading) {
         return <h1>Carregando...</h1>;
     }
-    console.log({ user, isAdmin, isResponsavel });
 
     return (
         <BrowserRouter>
@@ -37,11 +34,11 @@ function App() {
                 {isAuthenticated && isAdmin && (
                     <Route element={<AdminLayout />}>
                         <Route path="/" element={<Dashboard />} />
-                        <Route path="/reservas" element={<KeyCheckout />} />
-                        <Route path="/retiradas" element={<Withdrawals />} />
-                        <Route path="/salas" element={<ClassRoom />} />
-                        <Route path="/chaves" element={<Key />} />
-                        <Route path="/responsaveis" element={<Responsible />} />
+                        <Route path="/reservas" element={<KeyReservations />} />
+                        <Route path="/retiradas" element={<KeyWithdrawals />} />
+                        <Route path="/salas" element={<Rooms />} />
+                        <Route path="/chaves" element={<Keys />} />
+                        <Route path="/responsaveis" element={<ResponsiblePerson />} />
                         <Route path="/historico" element={<History />} />
                     </Route>
                 )}
@@ -49,14 +46,13 @@ function App() {
                 {isAuthenticated && isResponsavel && (
                     <Route element={<ResponsibleLayout />}>
                         <Route path="/" element={<Dashboard />} />
-                        <Route path="/reservas" element={<KeyCheckout />} />
-                        <Route path="/retiradas" element={<Withdrawals />} />
+                        <Route path="/reservas" element={<KeyReservations />} />
+                        <Route path="/retiradas" element={<KeyWithdrawals />} />
                         <Route path="/historico" element={<History />} />
                     </Route>
                 )}
-                <Route path="/signin" element={<Signin />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route path="/profile" element={<Profile />} />
 
 

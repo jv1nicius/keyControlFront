@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect, useCallback } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
+
 import { api } from "../services/api";
 
 export const AuthContext = createContext(null);
@@ -12,7 +13,7 @@ export function AuthProvider({ children }) {
     const isAuthenticated = !!user;
     const isAdmin = user?.funcao === "admin";
     const isResponsavel = user?.funcao === "responsavel";
-    
+
     const loadUser = useCallback(async () => {
         try {
             const res = await fetch(`${API_URL}/me`, {

@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import Card from '@mui/material/Card';
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
+import KeyCheckout from "./KeyReservations";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -19,7 +20,6 @@ import LooksOneIcon from '@mui/icons-material/LooksOne';
 import ViewWeekIcon from '@mui/icons-material/ViewWeek';
 
 import { api } from '../services/api'
-import KeyCheckout from "./KeyCheckout";
 
 export default function Dashboard() {
     const [keysInUse, setKeysInUse] = useState([]);

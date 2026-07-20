@@ -1,26 +1,28 @@
 import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Link, useNavigate } from "react-router-dom";
+
+import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
+import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from '@hookform/resolvers/zod'
-import { responsibleSchema } from "../schemas/responsibleSchema";
-import { Link, useNavigate } from "react-router-dom";
 
 import SignupImg from "../assets/Signup.svg"
 
-import { useAuth } from "../contexts/hooks/useAuth";
 import { api } from "../services/api";
 import { radius } from "../layouts/theme/tokens"
-
+import { responsibleSchema } from "../schemas/responsibleSchema";
+import { useAuth } from "../contexts/hooks/useAuth";
 import { toast } from 'sonner';
 
 export default function Signup() {
@@ -48,16 +50,21 @@ export default function Signup() {
             ativo: true
         }
     });
-
     const onSubmit = async (data) => {
         try {
             await api.post("/responsavel", data);
-            await login(data.email, data.senha);
+            try {
+                await login(data.email, data.senha);
+            } catch (loginError) {
+                toast.error("Cadastro realizado, mas não foi possível entrar automaticamente.");
+                return;
+            }
             reset();
             navigate("/");
         } catch (error) {
             if (error.response?.status === 422) {
                 const { detalhes, erro } = error.response.data;
+
                 toast.error(erro);
 
                 Object.entries(detalhes).forEach(([campo, mensagens]) => {
@@ -66,10 +73,13 @@ export default function Signup() {
                         message: mensagens[0],
                     });
                 });
+
                 return;
             }
-            toast.error("Ocorreu um erro inesperado.")
+
+            toast.error("Ocorreu um erro inesperado.");
         }
+
     }
 
     return (
@@ -81,6 +91,21 @@ export default function Signup() {
                 flexDirection: "column"
             }}
         >
+            <AppBar position="static" elevation={0}>
+                <Toolbar>
+                    <Link
+                        to="/"
+                        style={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            flexGrow: 1,
+                        }}>
+                        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                            KeyControl
+                        </Typography>
+                    </Link>
+                </Toolbar>
+            </AppBar>
             <Box
                 display="flex"
                 alignItems="center"
@@ -126,7 +151,8 @@ export default function Signup() {
                             borderRadius: `${radius.lg}px`,
                             padding: 4,
                             width: "90%",
-                            height: "90%",
+                            maxWidth: 990,
+                            p: 4,
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center"
@@ -367,6 +393,6 @@ export default function Signup() {
                     </Box>
                 </Grid>
             </Grid>
-        </Box>
+        </Box >
     )
 }

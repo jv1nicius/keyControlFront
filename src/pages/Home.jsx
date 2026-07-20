@@ -35,7 +35,7 @@ export default function Home() {
                 </AppBar>
             </Box>
 
-            <Container maxWidth={'xl'} >
+            <Container maxWidth={'auto'} >
                 <Box
                     sx={{
                         alignItems: "end",

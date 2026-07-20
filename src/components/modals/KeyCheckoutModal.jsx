@@ -1,27 +1,42 @@
-import { useState, useEffect } from "react"
-import {
-    Dialog, DialogContent, DialogTitle, DialogActions,
-    Box, TextField,
-    FormControl, InputLabel, Select, MenuItem, FormHelperText,  // ✅ faltavam esses
-    FormGroup, FormControlLabel, Checkbox,                       // ✅ para dias_semana quando for usar
-    Button, Alert
-} from "@mui/material"
-import { createReservaSchema, FREQUENCIA_VALUES, STATUS_VALUES, DIA_SEMANA_LABELS } from '../../schemas/keycheckoutSchema'
-import { useForm, Controller, useWatch } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { api } from '../../services/api'
+import { useEffect, useState } from "react"
+
+import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormGroup from '@mui/material/FormGroup'
+import FormHelperText from '@mui/material/FormHelperText'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import TextField from '@mui/material/TextField'
+
 import CheckIcon from '@mui/icons-material/Check';
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm, useWatch } from 'react-hook-form'
+import { toast } from 'sonner'
+
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+
+import { createReservaSchema, FREQUENCIA_VALUES, STATUS_VALUES, DIA_SEMANA_LABELS } from '../../schemas/keycheckoutSchema'
+import { api } from '../../services/api'
 import { useAuth } from "../../contexts/hooks/useAuth"
 
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
 dayjs.locale("pt-br");
+
 export default function KeyCheckoutModal({ open, onClose, onSuccess, classroom, isAdmin, reservation, }) {
     const [submitting, setSubmitting] = useState(false)
     const [classrooms, setClassrooms] = useState([])
@@ -226,12 +241,11 @@ export default function KeyCheckoutModal({ open, onClose, onSuccess, classroom, 
                                 label="Reservar para mim"
                             />
                         }
-                        {!isAdmin ?
-                            (
-                                <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
-                                    O responsável será você.
-                                </Alert>
-                            ) :
+                        {!isAdmin || myResponsibility ? (
+                            <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
+                                O responsável será você.
+                            </Alert>
+                        ) : (
                             <Controller
                                 name="responsavel_id"
                                 control={control}
@@ -267,7 +281,7 @@ export default function KeyCheckoutModal({ open, onClose, onSuccess, classroom, 
                                     </FormControl>
                                 )}
                             />
-                        }
+                        )}
 
 
                         <Box sx={{ display: "flex", gap: 2 }}>

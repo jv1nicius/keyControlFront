@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react'
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    FormControlLabel,
-    Button,
-    Stack,
-    Switch
-} from '@mui/material'
+import { useEffect, useState } from 'react'
 
-import { useForm, Controller } from 'react-hook-form'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
+
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { classroomSchema } from '../../schemas/classroomSchema'
-import { api } from '../../services/api'
 import { toast } from 'sonner';
+
+import { api } from '../../services/api'
+import { classroomSchema } from '../../schemas/classroomSchema'
 
 export default function ClassroomModal({ open, onClose, onSuccess, classroom = null }) {
     const [submitting, setSubmitting] = useState(false)

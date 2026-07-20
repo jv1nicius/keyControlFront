@@ -12,19 +12,9 @@ export const DIA_SEMANA_LABELS = {
   7: "Domingo",
 };
 
-// ---------------------------------------------------------------------------
-// Regex helpers
-// ---------------------------------------------------------------------------
-
-/** Aceita HH:MM ou HH:MM:SS */
 const TIME_REGEX = /^([01]\d|2[0-3]):([0-5]\d)(:[0-5]\d)?$/;
 
-/** Aceita YYYY-MM-DD com mês e dia básicos */
 const DATE_REGEX = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
-
-// ---------------------------------------------------------------------------
-// Schema base (sem superRefine) — permite .partial() no updateReservaSchema
-// ---------------------------------------------------------------------------
 
 const reservaBaseSchema = z.object({
   sala_id: z
@@ -55,7 +45,6 @@ const reservaBaseSchema = z.object({
     .string({ required_error: "O campo data_inicio é obrigatório." })
     .regex(DATE_REGEX, "data_inicio deve estar no formato YYYY-MM-DD."),
 
-  /** Obrigatório para todas as frequências exceto "única". */
   data_fim: z
     .string()
     .regex(DATE_REGEX, "data_fim deve estar no formato YYYY-MM-DD.")
@@ -66,7 +55,6 @@ const reservaBaseSchema = z.object({
     message: "O campo frequencia aceita apenas: única, semanal, quinzenal ou mensal.",
   }),
 
-  /** O backend persiste "ativa" por padrão quando não informado. */
   status: z
     .enum(STATUS_VALUES, {
       required_error: "O campo status é obrigatório.",
@@ -74,10 +62,6 @@ const reservaBaseSchema = z.object({
     })
     .default("ativa"),
 
-  /**
-   * Obrigatório quando frequencia === "semanal" ou "quinzenal".
-   * Valores: 1 (Segunda) … 7 (Domingo). Sem repetição.
-   */
   dias_semana: z
     .array(
       z
@@ -91,12 +75,7 @@ const reservaBaseSchema = z.object({
     .optional(),
 });
 
-// ---------------------------------------------------------------------------
-// Validações cruzadas reutilizáveis (regras de negócio do backend)
-// ---------------------------------------------------------------------------
-
 function validarReserva(data, ctx) {
-  // 1. hora_fim deve ser APÓS hora_inicio
   if (data.hora_inicio && data.hora_fim && data.hora_inicio >= data.hora_fim) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -105,7 +84,6 @@ function validarReserva(data, ctx) {
     });
   }
 
-  // 2. data_fim é obrigatório (e deve ser >= data_inicio) fora de "única"
   if (data.frequencia && data.frequencia !== "única") {
     if (!data.data_fim) {
       ctx.addIssue({
@@ -122,7 +100,6 @@ function validarReserva(data, ctx) {
     }
   }
 
-  // 3. dias_semana obrigatório para "semanal" e "quinzenal"
   if (
     (data.frequencia === "semanal" || data.frequencia === "quinzenal") &&
     (!data.dias_semana || data.dias_semana.length === 0)
@@ -134,7 +111,6 @@ function validarReserva(data, ctx) {
     });
   }
 
-  // 4. dias_semana sem valores duplicados
   if (data.dias_semana && data.dias_semana.length > 0) {
     const unique = new Set(data.dias_semana);
     if (unique.size !== data.dias_semana.length) {
@@ -147,25 +123,6 @@ function validarReserva(data, ctx) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Schemas exportados
-// ---------------------------------------------------------------------------
+export const createReservaSchema = reservaBaseSchema.superRefine(validarReserva)
 
-/** Schema de criação (POST /reservas) */
-export const createReservaSchema = reservaBaseSchema.superRefine(validarReserva);
-
-/** Schema de atualização (PUT /reservas/:id) — todos os campos opcionais */
-export const updateReservaSchema = reservaBaseSchema.partial().superRefine(validarReserva);
-
-// ---------------------------------------------------------------------------
-// Exemplo de uso com react-hook-form
-// ---------------------------------------------------------------------------
-//
-// import { useForm } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { createReservaSchema } from "./reservaSchema";
-//
-// const { register, handleSubmit, formState: { errors } } = useForm({
-//   resolver: zodResolver(createReservaSchema),
-//   defaultValues: { status: "ativa" },
-// });
+export const updateReservaSchema = reservaBaseSchema.partial().superRefine(validarReserva)

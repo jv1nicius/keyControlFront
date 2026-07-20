@@ -1,17 +1,34 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+
+import AddCard from '../components/cards/AddCard'
+import Grid from '@mui/material/Grid'
+
+import KeyCard from '../components/cards/KeyCard'
+import KeyModal from '../components/modals/KeyModal'
+
 import { api } from '../services/api'
-import { Grid } from '@mui/material'
-import KeyCard from '../components/modal/KeyCard'
-import AddKeyCard from '../components/modal/AddKeyCard'
-import KeyModal from '../components/modal/KeyModal'
+
 import { toast } from 'sonner'
 
 export default function KeyPage() {
+    const [keys, setKeys] = useState([])
+    const [classrooms, setClassrooms] = useState([])
+    const [withdrawals, setWithdrawals] = useState([])
+    const [reservations, setReservations] = useState([])
     const [data, setData] = useState([])
     const [modalOpen, setModalOpen] = useState(false)
     const [selected, setSelected] = useState(null)
     const [editingKey, setEditingKey] = useState(null)
-    const [classrooms, setClassrooms] = useState([])
+
+
+    const loadKeys = async () => {
+        try {
+            const { data } = await api.get('/chaves')
+            setKeys(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     const loadClassrooms = async () => {
         try {
@@ -23,16 +40,58 @@ export default function KeyPage() {
         }
     }
 
-    const loadKeys = async () => {
+    const loadWithdrawals = async () => {
         try {
-            const { data } = await api.get('/chaves')
-            setData(data)
+            const { data } = await api.get('/retiradas')
+            setWithdrawals(data)
         } catch (error) {
-            console.error(error)
-        } finally {
-            //setLoading(false)
+            console.error(error);
         }
     }
+
+    const loadReservations = async () => {
+        try {
+            const { data } = await api.get('/reservas')
+            setReservations(data)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const keysComplete = useMemo(() => {
+        return keys.map((key) => {
+            const classroom = classrooms.find(
+                sala => sala.sala_id === key.sala_id
+            )
+
+            const withdrawal = withdrawals
+                .filter(r => r.chave_id === key.chave_id)
+                .sort((a, b) => b.retirada_id - a.retirada_id)[0] ?? null
+
+            const reservation = reservations.find(
+                r =>
+                    r.sala_id === key.sala_id &&
+                    r.status === 'ativa'
+            ) ?? null
+
+            return {
+                ...key,
+                sala: classroom,
+                retirada: withdrawal,
+                reserva: reservation
+            }
+        })
+    }, [keys, classrooms, withdrawals, reservations])
+
+    const sortedKeys = useMemo(() => {
+        return [...keysComplete].sort((a, b) => {
+            if (a.disponivel !== b.disponivel) {
+                return Number(b.disponivel) - Number(a.disponivel)
+            }
+
+            return a.chave_nome.localeCompare(b.chave_nome)
+        })
+    }, [keysComplete])
 
     const handleDelete = async (chave) => {
         try {
@@ -51,22 +110,27 @@ export default function KeyPage() {
     useEffect(() => {
         loadKeys()
         loadClassrooms()
+        loadWithdrawals()
+        loadReservations()
     }, [])
 
 
     return (
         <>
-            {data.length == 0 ?
+            {sortedKeys.length == 0 ?
                 "Vazio" :
                 <Grid container spacing={1}>
                     <Grid size={3}>
-                        <AddKeyCard onClick={() => {
-                            setModalOpen(true)
-                            setEditingKey(null)
-                        }} />
+                        <AddCard
+                            title="Adicionar nova chave"
+                            onClick={() => {
+                                setModalOpen(true)
+                                setEditingKey(null)
+                            }}
+                        />
                     </Grid>
 
-                    {data.map((chave) => (
+                    {sortedKeys.map((chave) => (
                         <Grid key={chave.chave_id} size={3}>
                             <KeyCard
                                 chave={chave}

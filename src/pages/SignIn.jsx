@@ -1,26 +1,27 @@
 import { useState } from "react";
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, useNavigate } from "react-router-dom"
 
+import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Grid from "@mui/material/Grid"
 import IconButton from "@mui/material/IconButton"
 import InputAdornment from "@mui/material/InputAdornment"
+
 import TextField from "@mui/material/TextField"
+import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography"
 
 import Visibility from "@mui/icons-material/Visibility"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
 
-import { useForm, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signinSchema } from '../schemas/signinSchema'
-import { Link, useNavigate } from "react-router-dom"
-
-import { useAuth } from "../contexts/hooks/useAuth"
-
 import LoginImg from "../assets/Login-cuate.svg"
-import { radius } from "../layouts/theme/tokens"
 
+import { signinSchema } from '../schemas/signinSchema'
+import { useAuth } from "../contexts/hooks/useAuth"
+import { radius } from "../layouts/theme/tokens"
 import { toast } from 'sonner'
 
 export default function Signin() {
@@ -54,21 +55,28 @@ export default function Signin() {
     return (
         <Box
             sx={{
-                height: "100vh",
-                width: "100vw",
+                minHeight: "100vh",
+                width: "100%",
                 display: "flex",
                 flexDirection: "column"
             }}
         >
-            <Typography
-                variant="h4"
-                sx={{
-                    padding: 2,
-                    textAlign: "center"
-                }}
-            >
-                Bem-Vindo
-            </Typography>
+            <AppBar position="static" elevation={0}>
+                <Toolbar>
+                    <Link
+                        to="/"
+                        style={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            flexGrow: 1,
+                        }}>
+                        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                            KeyControl
+                        </Typography>
+                    </Link>
+                </Toolbar>
+            </AppBar>
+
 
             <Grid container sx={{ flex: 1, }}>
                 <Grid
@@ -103,9 +111,9 @@ export default function Signin() {
                             border: '1px solid',
                             borderColor: "divider",
                             borderRadius: `${radius.lg}px`,
-                            padding: 4,
-                            width: "90%",
-                            height: "90%",
+                            width: "100%",
+                            maxWidth: 990,
+                            p: 4,
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center"
@@ -118,10 +126,18 @@ export default function Signin() {
                                 maxWidth: 500,
                                 display: "flex",
                                 flexDirection: "column",
-                                gap: 3,
-                                pt: 5
+                                gap: 2.5,
                             }}
                         >
+                            <Typography
+                                variant="h4"
+                                sx={{
+                                    padding: 2,
+                                    textAlign: "center"
+                                }}
+                            >
+                                Bem-Vindo
+                            </Typography>
                             <Controller
                                 name="email"
                                 control={control}

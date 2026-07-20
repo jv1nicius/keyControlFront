@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
-import Chip from '@mui/material/Chip';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -12,17 +11,17 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
-import KeyIcon from '@mui/icons-material/Key';
 
-export default function KeyCard({ chave, selected, onToggle, onEdit, onDelete }) {
+export default function ResponsibleCard({ responsavel, onToggle, selected, onEdit, onDelete }) {
     return (
         <Card
             sx={{
                 border: 1,
-                borderColor: chave.disponivel
+                borderColor: responsavel.ativo
                     ? 'success.main'
                     : 'error.main',
                 transition: '0.4s',
+
                 '&:hover': {
                     transform: 'translateY(-3px)',
                     boxShadow: 4,
@@ -31,25 +30,12 @@ export default function KeyCard({ chave, selected, onToggle, onEdit, onDelete })
         >
             <CardActionArea onClick={onToggle}>
                 <CardContent>
-                    <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="center"
-                    >
-                        <KeyIcon
-                            sx={{
-                                color: chave.disponivel ? 'success.main' : 'error.main'
-                            }}
-                        />
-                        <Typography variant='h6'>
-                            {chave.chave_nome}
-                        </Typography>
-                        <Chip
-                            label={chave.disponivel ? 'Disponível' : 'Em uso'}
-                            color={chave.disponivel ? 'success' : 'error'}
-                            size="small"
-                        />
-                    </Box>
+                    <Typography variant='subtitle1'>
+                        {responsavel.responsavel_nome}
+                    </Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                        {responsavel.email}
+                    </Typography>
                 </CardContent>
             </CardActionArea>
             <Collapse in={selected}>

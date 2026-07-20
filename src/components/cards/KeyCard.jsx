@@ -12,13 +12,18 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
+import KeyIcon from '@mui/icons-material/Key';
 
-export default function ClassroomCard({ sala, selected, onToggle, onEdit, onDelete }) {
+export default function KeyCard({ chave, selected, onToggle, onEdit, onDelete }) {
+    const disabled = !chave.disponivel && !chave.retirada
+
+    console.log(disabled);
+
     return (
         <Card
             sx={{
                 border: 1,
-                borderColor: sala.disponivel
+                borderColor: chave.disponivel
                     ? 'success.main'
                     : 'error.main',
                 transition: '0.4s',
@@ -35,16 +40,44 @@ export default function ClassroomCard({ sala, selected, onToggle, onEdit, onDele
                         justifyContent="space-between"
                         alignItems="center"
                     >
-                        <Typography variant="h6">
-                            {sala.sala_nome}
+                        <KeyIcon
+                            sx={{
+                                color: chave.disponivel ? 'success.main' : 'error.main'
+                            }}
+                        />
+                        <Typography variant='h6'>
+                            {chave.chave_nome}
                         </Typography>
-
                         <Chip
-                            label={sala.disponivel ? 'Livre' : 'Desativada'}
-                            color={sala.disponivel ? 'success' : 'error'}
+                            label={chave.disponivel ? 'Disponível' : 'Indisponível'}
+                            color={chave.disponivel ? 'success' : 'error'}
                             size="small"
                         />
                     </Box>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        mt={1}
+                    >
+                        Sala: {chave.sala?.sala_nome}
+                    </Typography>
+                    {!chave.disponivel && chave.retirada && (
+                        <Typography
+                            variant="body2"
+                            color="error.main"
+                        >
+                            Retirada por {chave.retirada.usuario_nome}
+                        </Typography>
+                    )}
+
+                    {chave.reserva && (
+                        <Typography
+                            variant="body2"
+                            color="warning.main"
+                        >
+                            Reserva ativa
+                        </Typography>
+                    )}
                 </CardContent>
             </CardActionArea>
             <Collapse in={selected}>
@@ -75,5 +108,5 @@ export default function ClassroomCard({ sala, selected, onToggle, onEdit, onDele
                 </Box>
             </Collapse>
         </Card>
-    );
+    )
 }

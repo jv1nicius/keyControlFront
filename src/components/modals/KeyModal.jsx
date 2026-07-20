@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Button,
-    Stack, FormControlLabel, Switch,
-    FormHelperText, FormControl, MenuItem, InputLabel, Select
-} from '@mui/material'
 
-import { useForm, Controller } from 'react-hook-form'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormHelperText from '@mui/material/FormHelperText'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
+
 import { zodResolver } from '@hookform/resolvers/zod'
-import { keysSchema } from '../../schemas/keysSchema'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+
 import { api } from '../../services/api'
-import { toast } from 'sonner';
+import { keysSchema } from '../../schemas/keysSchema'
 
 export default function KeyModal({ open, onClose, onSuccess, editingKey = null }) {
     const [submitting, setSubmitting] = useState(false)
@@ -71,8 +76,7 @@ export default function KeyModal({ open, onClose, onSuccess, editingKey = null }
             setSubmitting(false)
         }
     }
-    useEffect(() => {
-    }, [classrooms])
+
     useEffect(() => {
         if (open) {
             if (editingKey) {

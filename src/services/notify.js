@@ -1,8 +1,8 @@
 import { toast } from "sonner";
 
 export const notify = {
-    success: (message: string) => toast.success(message),
-    error: (message: string) => toast.error(message),
-    warning: (message: string) => toast.warning(message),
-    info: (message: string) => toast.info(message),
+    success: (message) => toast.success(message),
+    error: (message) => toast.error(message),
+    warning: (message) => toast.warning(message),
+    info: (message) => toast.info(message),
 };

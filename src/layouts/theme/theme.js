@@ -1,21 +1,6 @@
-// theme.js
-// Constrói o tema MUI a partir dos tokens em ./tokens.js.
-//
-// Uso no seu ThemeProvider existente:
-//
-//   import { createAppTheme } from './theme/theme';
-//   const theme = useMemo(() => createAppTheme(mode), [mode]); // mode: 'light' | 'dark'
-//   <ThemeProvider theme={theme}> ... </ThemeProvider>
-//
-// 'mode' é o mesmo estado que você já usa no botão de sol/lua do header.
+import { alpha, createTheme, responsiveFontSizes, } from '@mui/material/styles';
+import { brass, fontFamily, neutral, radius, semantic, typeScale } from './tokens';
 
-import { createTheme, responsiveFontSizes, alpha } from '@mui/material/styles';
-import { neutral, brass, semantic, radius, fontFamily, typeScale } from './tokens';
-
-// Adapta uma cor semântica (success/error/warning/info) pro modo atual.
-// Light: fundo = tom bem claro, texto = tom escuro (contraste em fundo branco).
-// Dark: fundo = a própria cor com transparência, texto = a própria cor
-// (mais visível sobre fundo escuro do que o tom "dark", que ficaria apagado).
 function withMode(token, isLight) {
     return {
         main: token.main,
@@ -25,9 +10,6 @@ function withMode(token, isLight) {
     };
 }
 
-// Sombra suave e neutra pra qualquer coisa que use elevation={n} ou
-// boxShadow: n — substitui as sombras escuras/pesadas padrão do MUI,
-// que destoam do visual flat/minimalista.
 function createSoftShadows(isLight) {
     const rgb = isLight ? '23,23,23' : '0,0,0';
     const opacity = isLight ? 0.06 : 0.3;
@@ -50,8 +32,6 @@ function getDesignTokens(mode) {
                 main: isLight ? brass[600] : brass[400],
                 light: isLight ? brass[400] : brass[300],
                 dark: isLight ? brass[800] : brass[600],
-                // fundo pálido pra avatares/ícones de destaque (ex.: Home.jsx) —
-                // use como bgcolor: 'primary.soft' em vez de hardcodar brass[100].
                 soft: isLight ? brass[100] : alpha(brass[400], 0.18),
                 contrastText: isLight ? '#FFFFFF' : neutral[950],
             },
@@ -109,9 +89,6 @@ export function createAppTheme(mode = 'light') {
                     body: { backgroundColor: tokens.palette.background.default },
                 },
             },
-
-            // Header neutro com fio inferior — o destaque fica reservado para
-            // ações (botões, links, item ativo do menu), não para o "pano de fundo".
             MuiAppBar: {
                 styleOverrides: {
                     root: {
@@ -151,8 +128,6 @@ export function createAppTheme(mode = 'light') {
                 },
             },
 
-            // Cards com borda fina em vez de sombra pesada — já é o padrão que
-            // aparece nas suas telas de Salas/Chaves/Retiradas, só padronizado.
             MuiCard: {
                 styleOverrides: {
                     root: {
@@ -193,8 +168,6 @@ export function createAppTheme(mode = 'light') {
                 },
             },
 
-            // Chips em formato pill — use com color="success" | "error" | "info"
-            // | "warning" (veja statusColorMap em tokens.js) para os badges de status.
             MuiChip: {
                 styleOverrides: {
                     root: { borderRadius: radius.pill, fontWeight: 600, fontSize: '0.75rem' },
@@ -231,27 +204,3 @@ export function createAppTheme(mode = 'light') {
 }
 
 export { getDesignTokens };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,9 +1,3 @@
-// statusChip.js
-// Utilitário para converter um status em uma cor semântica do MUI.
-//
-// Exemplo:
-// <Chip color={getStatusChipColor(status)} />
-
 import { statusColorMap } from './tokens';
 
 function normalizeStatus(status) {

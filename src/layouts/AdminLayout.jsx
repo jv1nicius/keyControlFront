@@ -1,12 +1,10 @@
-import * as React from 'react';
-
-import HomeIcon from '@mui/icons-material/Home';
-import EventIcon from '@mui/icons-material/Event';
 import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn';
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
-import PeopleIcon from '@mui/icons-material/People';
+import EventIcon from '@mui/icons-material/Event';
 import HistoryIcon from '@mui/icons-material/History';
+import HomeIcon from '@mui/icons-material/Home';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import PeopleIcon from '@mui/icons-material/People';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 
 import BaseLayout from './BaseLayout';
 
@@ -21,5 +19,5 @@ const menuItems = [
 ];
 
 export default function AdminLayout() {
-    return <BaseLayout menuItems={menuItems} enableSearch/>;
+    return <BaseLayout menuItems={menuItems} enableSearch />;
 }

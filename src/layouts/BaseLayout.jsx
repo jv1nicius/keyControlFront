@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react'
 
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -23,18 +23,14 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import SettingsIcon from '@mui/icons-material/Settings';
 import TextField from '@mui/material/TextField';
 
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
+
 import { useColorMode } from './theme/AppThemeProvider';
 
 const drawerWidth = 240;
-
-const bottomMenuItems = [
-    { text: 'Configurações', path: '/settings', icon: <SettingsIcon /> },
-];
 
 const openedMixin = (theme) => ({
     width: drawerWidth,
@@ -117,9 +113,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
-/**
- * Renderiza um grupo de itens de menu dentro do Drawer.
- */
 function MenuSection({ items, open, currentPath }) {
     return (
         <List>
@@ -158,17 +151,12 @@ function MenuSection({ items, open, currentPath }) {
     );
 }
 
-/**
- * Layout base com AppBar + Drawer retrátil, reutilizado pelos layouts
- * de cada perfil (Admin / Responsável). Cada perfil só precisa informar
- * sua própria lista de itens de menu.
- */
 export default function BaseLayout({ menuItems, sectionLabel, enableSearch = false }) {
     const theme = useTheme();
     const { mode, toggleColorMode } = useColorMode();
-    const [open, setOpen] = React.useState(true);
-    const [search, setSearch] = React.useState('');
-    const [searchOpen, setSearchOpen] = React.useState(false);
+    const [open, setOpen] = useState(true);
+    const [search, setSearch] = useState('');
+    const [searchOpen, setSearchOpen] = useState(false);
 
     const location = useLocation();
     const pathnames = location.pathname.split('/').filter(Boolean).map((x) => x.charAt(0).toUpperCase() + x.slice(1));;

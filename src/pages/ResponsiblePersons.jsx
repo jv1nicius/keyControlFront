@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
-import { api } from '../services/api'
-import { Grid } from '@mui/material'
-import ResponsibleCard from '../components/modal/ResponsibleCard'
-import { useAuth } from "../contexts/hooks/useAuth";
-import ResponsibleModal from '../components/modal/ResponsibleModal';
 import { useOutletContext } from 'react-router-dom'
+
+import Grid from '@mui/material/Grid'
+
+import ResponsibleCard from '../components/cards/ResponsibleCard'
+import ResponsibleModal from '../components/modals/ResponsibleModal';
+
+import { api } from '../services/api'
+import { useAuth } from "../contexts/hooks/useAuth";
 
 export default function ResponsiblePage() {
     const [data, setData] = useState([])
@@ -25,12 +28,8 @@ export default function ResponsiblePage() {
                 (responsible) => responsible.email !== user.email
             );
             setData(usersWithoutMe)
-            console.log(usersWithoutMe);
-
         } catch (error) {
             console.error(error)
-        } finally {
-            //setLoading(false)
         }
     }
 
