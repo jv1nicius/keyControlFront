@@ -64,7 +64,7 @@ export function AuthProvider({ children }) {
         setUser({
             user_id: data.id,
             usuario: data.usuario,
-                            data_nascimento: data.data_nascimento,
+            data_nascimento: data.data_nascimento,
             email: data.email,
             funcao: data.funcao,
         });

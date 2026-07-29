@@ -194,7 +194,11 @@ export default function History() {
                                             <TableCell>
                                                 {formatarHora(item.hora_prevista_devolucao)}
                                             </TableCell>
-                                            <TableCell>{formatarHora(item.hora_devolucao)}</TableCell>
+                                            <TableCell>
+                                                {item.data_devolucao
+                                                    ? `${formatarData(item.data_devolucao)} às ${formatarHora(item.hora_devolucao)}`
+                                                    : "-"}
+                                            </TableCell>
                                             <TableCell>
                                                 <Chip
                                                     size="small"

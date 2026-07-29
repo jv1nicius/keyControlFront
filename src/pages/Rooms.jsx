@@ -168,7 +168,17 @@ export default function ClassRoomPage() {
 
         <>
             {roomsComplete.length === 0 ? (
-                'Vazio'
+                <Grid container spacing={1}>
+                    <Grid key={'add-card'} size={3}>
+                        <AddCard
+                            title="Adicionar nova sala"
+                            onClick={() => {
+                                setModalOpen(true)
+                                setEditingClassroom(null)
+                            }}
+                        />
+                    </Grid>
+                </Grid>
             ) : (
                 <Grid container spacing={1}>
                     {!search && (

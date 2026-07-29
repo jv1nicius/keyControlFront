@@ -54,6 +54,7 @@ export default function KeyCard({ chave, selected, onToggle, onEdit, onDelete })
                             size="small"
                         />
                     </Box>
+                    {/* 
                     <Typography
                         variant="body2"
                         color="text.secondary"
@@ -61,6 +62,7 @@ export default function KeyCard({ chave, selected, onToggle, onEdit, onDelete })
                     >
                         Sala: {chave.sala?.sala_nome}
                     </Typography>
+                    */}
                     {!chave.disponivel && chave.retirada && (
                         <Typography
                             variant="body2"
