@@ -15,6 +15,7 @@ import ClassroomCard from '../components/cards/ClassroomCard'
 import ClassroomModal from '../components/modals/ClassroomModal'
 import ClassroomSearchCard from '../components/cards/ClassroomSearchCard'
 
+import { useAuth } from '../contexts/hooks/useAuth';
 import { api } from '../services/api'
 import { useOutletContext } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -30,7 +31,7 @@ export default function ClassRoomPage() {
     const [editingClassroom, setEditingClassroom] = useState(null)
 
     const { search } = useOutletContext()
-
+    const { user } = useAuth()
     const [sort] = useState('nome')
     const [order] = useState('asc')
 
@@ -141,7 +142,12 @@ export default function ClassRoomPage() {
 
     const handleDelete = async (sala) => {
         try {
-            await api.delete(`/salas/${sala.sala_id}`)
+            
+            await api.delete(`/salas/${sala.sala_id}`, {
+                data: {
+                    deleted_by: user.user_id
+                }
+            })
 
             toast.success(`${sala.sala_nome} removida!`)
 

@@ -25,7 +25,8 @@ export default function ReservationCard({
     onToggle,
     isAdmin,
     onEdit,
-    onDelete
+    onDelete,
+    user
 }) {
     const statusLabel =
         reserva?.status.charAt(0).toUpperCase() + reserva?.status.slice(1);
@@ -109,7 +110,7 @@ export default function ReservationCard({
                     </Box>
                 </CardContent>
             </CardActionArea>
-            {isAdmin &&
+            {(isAdmin || user.user_id == reserva.responsavel_id) &&
                 <Collapse in={selected}>
                     <Divider />
                     <Box

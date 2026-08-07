@@ -26,6 +26,7 @@ export default function Withdrawals() {
     const [selectedClassroom, setSelectedClassroom] = useState(null);
     const [reservationModalOpen, setReservationModalOpen] = useState(false)
     const [reservationClassroom, setReservationClassroom] = useState(null)
+    const [reservations, setReservations] = useState([]);
     const { user, loading, isAdmin } = useAuth()
 
     const loadClassroom = async () => {
@@ -38,6 +39,15 @@ export default function Withdrawals() {
             //setLoading(false)
         }
     }
+
+    const loadReservations = async () => {
+        try {
+            const { data } = await api.get('/reservas');
+            setReservations(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const loadKeys = async () => {
         try {
@@ -73,19 +83,92 @@ export default function Withdrawals() {
     };
 
     useEffect(() => {
-        loadClassroom()
-        loadWithdrawals()
-        loadKeys()
-    }, [])
+        loadClassroom();
+        loadWithdrawals();
+        loadKeys();
+        loadReservations();
+    }, []);
 
-    const classroomsWithKeys = classrooms.map(classroom => ({
+const getReservationStatus = (classroom) => {
+    if (!user?.user_id) {
+        return {
+            reservation: null,
+            hasReservation: false,
+            isToday: false,
+            isNear: false,
+        };
+    }
+
+    const now = new Date();
+
+    // JS: domingo = 0
+    const today = now.getDay();
+
+    // sua API usa 1..7?
+    const weekDay = today === 0 ? 7 : today;
+
+    const reservation = reservations.find(r => {
+        if (r.sala_id !== classroom.sala_id) return false;
+        if (r.responsavel_id !== user.user_id) return false;
+        if (r.status !== "ativa") return false;
+
+        const todayDate = now.toISOString().split("T")[0];
+
+        if (
+            todayDate < r.data_inicio ||
+            todayDate > r.data_fim
+        ) {
+            return false;
+        }
+
+        return r.dias_semana.includes(weekDay);
+    });
+
+    if (!reservation) {
+        return {
+            reservation: null,
+            hasReservation: false,
+            isToday: false,
+            isNear: false,
+        };
+    }
+
+    const [hour, minute] = reservation.hora_inicio.split(":");
+
+    const reservationDate = new Date();
+    reservationDate.setHours(Number(hour), Number(minute), 0);
+
+    const diffMinutes =
+        (reservationDate.getTime() - now.getTime()) / 1000 / 60;
+
+    return {
+        reservation,
+        hasReservation: true,
+        isToday: true,
+        isNear: diffMinutes >= 0 && diffMinutes <= 30,
+        minutesRemaining: Math.floor(diffMinutes)
+    };
+};
+
+const classroomsWithReservations = classrooms.map((classroom) => {
+
+    const reservation = reservations.find(r =>
+        r.sala_id === classroom.sala_id &&
+        r.status === "ativa"
+    );
+
+    return {
         ...classroom,
-        keys: keys.filter(key => key.sala_id === classroom.sala_id)
-    }));
+        keys: keys.filter(key => key.sala_id === classroom.sala_id),
+        reservation,
+        reservationStatus: getReservationStatus(classroom)
+    };
+});
+
 
     return (
         <>
-            {classroomsWithKeys.length == 0 ?
+            {classroomsWithReservations.length == 0 ?
                 "Vazio" :
                 <Grid container spacing={2}>
                     <Grid size={12}>
@@ -95,7 +178,7 @@ export default function Withdrawals() {
                             </Button>
                         </Box>
                     </Grid>
-                    {classroomsWithKeys.map((classroom) => (
+                    {classroomsWithReservations.map((classroom) => (
                         <Grid size={4} key={classroom.sala_id}>
                             <WithdrawalsCard
                                 classroom={classroom}

@@ -15,6 +15,7 @@ import ReservationCard from '../components/cards/ReservationCard';
 
 import { useAuth } from '../contexts/hooks/useAuth';
 import { api } from "../services/api";
+import { toast } from 'sonner'
 
 export default function KeyCheckout() {
     const [data, setData] = useState([])
@@ -102,7 +103,12 @@ export default function KeyCheckout() {
 
     const handleDelete = async (id) => {
         try {
-            await api.delete(`/reservas/${id}`);
+            await api.delete(`/reservas/${id}`,  {
+                data: {
+                    deleted_by: user.user_id
+                }
+            });
+            toast.success('Nova reserva cadastrada!')
             loadKeycheckout();
         } catch (error) {
             console.error(error);
@@ -158,7 +164,9 @@ export default function KeyCheckout() {
                                         )}
                                     onEdit={() => handleEdit(reserva)}
                                     onDelete={() => handleDelete(reserva.reserva_id)}
+                                    
                                     isAdmin={isAdmin}
+                                    user={user}
                                 />
                             </Grid>
                         ))}
@@ -175,6 +183,11 @@ export default function KeyCheckout() {
                 onSuccess={() => {
                     loadKeycheckout();
                     setEditingReservation(null);
+                    if (editingReservation) {
+                        toast.success("Reserva atualizada com sucesso!");
+                    } else {
+                        toast.success("Reserva cadastrada com sucesso!");
+                    }
                 }}
                 reservation={editingReservation}
                 isAdmin={isAdmin}

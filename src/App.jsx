@@ -23,6 +23,7 @@ function App() {
 
     if (loading) {
         return <h1>Carregando...</h1>;
+        console.log(isAuthenticated)
     }
 
     return (

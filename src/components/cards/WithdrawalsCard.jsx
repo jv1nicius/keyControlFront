@@ -10,6 +10,15 @@ import { api } from '../../services/api';
 
 export default function WithdrawalsCard({ classroom, withdrawals, keys, user, onOpen, onOpenReservation, reload }) {
 
+    const {
+    hasReservation,
+    isToday,
+    isNear,
+    minutesRemaining,
+    reservation,
+} = classroom.reservationStatus ?? {};
+
+
     const retirada = withdrawals.find(w => {
         const key = keys.find(k => k.chave_id === w.chave_id);
 
@@ -51,7 +60,18 @@ export default function WithdrawalsCard({ classroom, withdrawals, keys, user, on
                         color={classroom.disponivel ? "success" : "error"}
                     />
                 </Box>
-
+{hasReservation && (
+    <Box mt={1}>
+        <Chip
+            color={isNear ? "success" : "info"}
+            label={
+                isNear
+                    ? `Sua reserva começa em ${minutesRemaining} min`
+                    : `Sua reserva às ${reservation.hora_inicio}`
+            }
+        />
+    </Box>
+)}
                 <Divider sx={{ my: 1 }} />
 
                 {!classroom.disponivel ? (

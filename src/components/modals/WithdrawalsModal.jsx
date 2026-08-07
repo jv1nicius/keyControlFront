@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
 
+import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
+
 
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -96,11 +100,36 @@ export default function WithdrawalsModal({ open, onClose, user, classroom }) {
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth>
-            <DialogTitle>Retirar Chave</DialogTitle>
+            <DialogTitle>Confirme os dados da retirada:</DialogTitle>
             <form onSubmit={handleSubmit(onSubmit, onError)}>
                 <DialogContent>
+                    <Box display="flex" flexDirection="column" gap={1}>
+                        <Typography>
+                            <strong>Sala:</strong> {classroom?.sala_nome}
+                        </Typography>
 
+                        <Typography>
+                            <strong>Chave:</strong> {keys.find(k => k.disponivel)?.chave_nome}
+                        </Typography>
 
+                        <Typography>
+                            <strong>Responsável:</strong> {user?.usuario}
+                        </Typography>
+
+                        <Typography>
+                            <strong>Retirada:</strong> {new Date().toLocaleString('pt-BR')}
+                        </Typography>
+
+                        <Typography>
+                            <strong>Previsão de devolução:</strong> 1 hora após a retirada
+                        </Typography>
+                    </Box>
+
+                    {!keys.some(k => k.disponivel) && (
+                        <Alert severity="warning" sx={{ mt: 2 }}>
+                            Não há chaves disponíveis para esta sala.
+                        </Alert>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} disabled={submitting}>
